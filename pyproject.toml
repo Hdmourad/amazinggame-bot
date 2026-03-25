@@ -21,7 +21,11 @@ build-backend = "setuptools.build_meta"
 exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:"]
 
 [tool.coverage.run]
-omit = []
+omit = [
+    "src/amazing/network/*",
+    "src/amazing/killall.py",
+    "src/amazing/viewer/*",
+]
 
 [tool.ruff]
 target-version = "py314"
