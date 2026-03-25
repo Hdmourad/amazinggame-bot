@@ -82,15 +82,15 @@ ruff check --fix src/ tests/
 ```
 
 **Standards**:
-- Line length: 88 characters (Black standard)
+- Line length: 88 characters (Ruff standard)
 - Complexity: Functions should be ≤10 cyclomatic complexity
 - No unused imports or variables
 - Type hints for public APIs
 
 ### Type Checking
 ```bash
-# Check with mypy or pyright
-mypy src/
+# Check with ty or pyright
+ty src/
 ```
 
 **Requirements**:
@@ -98,10 +98,10 @@ mypy src/
 - Private functions should have type hints when non-obvious
 - Use `Optional[]` for nullable types
 
-### Formatting (Black)
+### Formatting (Ruff)
 ```bash
 # Format code
-black src/ tests/
+ruff format src/ tests/
 ```
 
 **Standards**:
@@ -127,12 +127,12 @@ black src/ tests/
 
 - [ ] **Type checking passes**
   ```bash
-  mypy src/
+  ty src/
   ```
 
 - [ ] **Code is formatted**
   ```bash
-  black --check src/ tests/
+  ruff format --check src/ tests/
   ```
 
 - [ ] **Test coverage is adequate** (target: >80%)
@@ -201,36 +201,28 @@ black src/ tests/
 ### Required Dependencies
 Add to `pyproject.toml`:
 ```toml
-[tool.black]
-line-length = 88
-target-version = ["py39"]
-
 [tool.ruff]
 target-version = "py39"
 line-length = 88
 
-[tool.mypy]
+[tool.ty]
 python_version = "3.9"
 warn_return_any = true
 warn_unused_configs = true
 ```
 
-### Pre-commit Hook (Recommended)
+### Prek Hook (Recommended)
 ```yaml
-# .pre-commit-config.yaml
+# .prek-config.yaml
 repos:
-  - repo: https://github.com/psf/black
-    rev: 23.x.x
-    hooks:
-      - id: black
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
+  - repo: https://github.com/charliermarsh/ruff-prek
     rev: v0.x.x
     hooks:
       - id: ruff
-  - repo: https://github.com/pre-commit/mirrors-mypy
+  - repo: https://github.com/pre-commit/mirrors-ty
     rev: v1.x.x
     hooks:
-      - id: mypy
+      - id: ty
 ```
 
 ---
