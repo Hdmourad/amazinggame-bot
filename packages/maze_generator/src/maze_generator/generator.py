@@ -23,13 +23,21 @@ class DisjointSet:
         self.rank = [0] * size
 
     def find(self, i: int) -> int:
-        """Find root of node i with path compression."""
+        """Find root of node i with path compression.
+
+        Returns:
+            Root representative index for node `i`.
+        """
         if self.parent[i] != i:
             self.parent[i] = self.find(self.parent[i])
         return self.parent[i]
 
     def union(self, i: int, j: int) -> bool:
-        """Union two sets and return True if merged."""
+        """Union two sets.
+
+        Returns:
+            True when the sets were merged, otherwise False.
+        """
         ri = self.find(i)
         rj = self.find(j)
         if ri == rj:
@@ -99,7 +107,11 @@ def generate_maze(
     height: int,
     min_open_edges: int | None = None,
 ) -> Maze:
-    """Generate a maze by random wall removals with fast connectivity heuristics."""
+    """Generate a maze by random wall removals with fast connectivity heuristics.
+
+    Returns:
+        A maze where start and end are connected and at least 10 paths are targeted.
+    """
     maze = Maze(width, height)
 
     if min_open_edges is None:
