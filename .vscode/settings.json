@@ -43,6 +43,18 @@
         "/^uv run ruff check packages/maze_generator && uv run ty check packages/maze_generator$/": {
             "approve": true,
             "matchCommandLine": true
+        },
+        "/^uv run python -m pytest packages/maze_generator/tests/test_generator\\.py -v$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^uv run python -m pytest -q$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^uv run ruff check packages/maze_generator$/": {
+            "approve": true,
+            "matchCommandLine": true
         }
     }
 }

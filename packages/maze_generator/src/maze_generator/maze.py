@@ -39,7 +39,7 @@ class Maze:
         self.height = height
 
         # Initialize walls grid with extra row/column for perimeter
-        # wall[x][y] contains wall info for the cell at (x, y)
+        # walls[x][y] contains wall info for the cell at (x, y)
         self.walls = []
         for x in range(width + 1):  # +1 for hidden column
             self.walls.append([])

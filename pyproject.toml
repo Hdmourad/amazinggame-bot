@@ -54,5 +54,5 @@ package = false
 members = ["packages/*"]
 
 [tool.pytest.ini_options]
-addopts = "--import-mode=importlib -vvv --cov-report term-missing --cov-report html --cov-branch --cov-config=pyproject.toml"
+addopts = "--import-mode=importlib -vvv --cov-report term-missing --cov-report html --cov-branch --cov-config=pyproject.toml --full-trace"
 minversion = "8.0"
