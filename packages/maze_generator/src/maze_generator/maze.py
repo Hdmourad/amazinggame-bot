@@ -1,6 +1,24 @@
 """Maze data structure for maze generator."""
 
+from collections import UserList
+from typing import NamedTuple
+
 from .cell import Cell
+
+
+class CellCoord(NamedTuple):
+    """Coordinate in the maze, with x/y grid positions."""
+
+    x: int
+    y: int
+
+
+class Path(UserList):
+    """Represents a path as a list of cell coordinates."""
+
+    def __str__(self) -> str:
+        """Return a user-readable representation of the path."""
+        return "[" + ", ".join(f"({c.x},{c.y})" for c in self.data) + "]"
 
 
 class Maze:
@@ -29,14 +47,14 @@ class Maze:
                 # Each cell has top and left walls
                 self.walls[row].append(Cell(top=True, left=True))
 
-    def nb_paths(
+    def paths(
         self,
         start_x: int,
         start_y: int,
         end_x: int,
         end_y: int,
-    ) -> int:
-        """Count simple paths from start to end in the maze.
+    ) -> list[Path]:
+        """Return all simple paths from start to end in the maze.
 
         Only paths that do not revisit a cell are counted.
 
@@ -61,9 +79,11 @@ class Maze:
             raise ValueError(msg)
 
         if (start_x, start_y) == (end_x, end_y):
-            return 1
+            path = Path([CellCoord(start_x, start_y)])
+            print(path)  # noqa: T201
+            return [path]
 
-        return self._count_paths(start_x, start_y, end_x, end_y)
+        return self._find_paths(start_x, start_y, end_x, end_y)
 
     def _can_move(self, x: int, y: int, nx: int, ny: int) -> bool:
         if nx < 0 or nx >= self.width or ny < 0 or ny >= self.height:
@@ -80,26 +100,32 @@ class Maze:
 
         return False
 
-    def _count_paths(
+    def _find_paths(
         self,
         start_x: int,
         start_y: int,
         end_x: int,
         end_y: int,
-    ) -> int:
+    ) -> list[Path]:
         visited: set[tuple[int, int]] = set()
+        result: list[Path] = []
+        current: Path = Path()
 
-        def dfs(x: int, y: int) -> int:
-            if (x, y) == (end_x, end_y):
-                return 1
-
+        def dfs(x: int, y: int) -> None:
+            current.append(CellCoord(x, y))
             visited.add((x, y))
-            total = 0
-            for nx, ny in ((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)):
-                if (nx, ny) not in visited and self._can_move(x, y, nx, ny):
-                    total += dfs(nx, ny)
+
+            if (x, y) == (end_x, end_y):
+                found = Path(current)
+                print(found)  # noqa: T201
+                result.append(found)
+            else:
+                for nx, ny in ((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)):
+                    if (nx, ny) not in visited and self._can_move(x, y, nx, ny):
+                        dfs(nx, ny)
 
             visited.remove((x, y))
-            return total
+            current.pop()
 
-        return dfs(start_x, start_y)
+        dfs(start_x, start_y)
+        return result

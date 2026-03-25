@@ -1,7 +1,7 @@
 """Tests for maze_generator.maze module."""
 
 from maze_generator.cell import Cell
-from maze_generator.maze import Maze
+from maze_generator.maze import CellCoord, Maze, Path
 
 
 def test_maze_initialization_sets_width_and_height() -> None:
@@ -55,13 +55,13 @@ def test_maze_perimeter_walls_are_present() -> None:
         assert maze.walls[maze.height][col].top is True
 
 
-def test_nb_paths_is_zero_when_walls_block_path() -> None:
+def test_paths_is_empty_when_walls_block_path() -> None:
     """Count is zero when there is no open passage."""
     maze = Maze(width=2, height=2)
-    assert maze.nb_paths(0, 0, 1, 1) == 0
+    assert maze.paths(0, 0, 1, 1) == []
 
 
-def test_nb_paths_count_simple_open_maze() -> None:
+def test_paths_count_simple_open_maze() -> None:
     """Count paths on a fully opened 2x2 maze."""
     maze = Maze(width=2, height=2)
     for row in range(maze.height + 1):
@@ -69,16 +69,19 @@ def test_nb_paths_count_simple_open_maze() -> None:
             maze.walls[row][col].top = False
             maze.walls[row][col].left = False
 
-    assert maze.nb_paths(0, 0, 1, 1) == 2
+    all_paths = maze.paths(0, 0, 1, 1)
+    assert len(all_paths) == 2
 
 
-def test_nb_paths_start_equals_end() -> None:
+def test_paths_start_equals_end() -> None:
     """Start equals end should produce exactly one path."""
     maze = Maze(width=2, height=2)
-    assert maze.nb_paths(0, 0, 0, 0) == 1
+    all_paths = maze.paths(0, 0, 0, 0)
+    assert len(all_paths) == 1
+    assert all_paths[0] == Path([CellCoord(0, 0)])
 
 
-def test_nb_paths_count_simple_maze() -> None:
+def test_paths_count_simple_maze() -> None:
     """Count paths on a fully opened 3x3 maze."""
     maze = Maze(width=3, height=3)
     for row in range(maze.height + 1):
@@ -86,4 +89,5 @@ def test_nb_paths_count_simple_maze() -> None:
             maze.walls[row][col].top = False
             maze.walls[row][col].left = False
 
-    assert maze.nb_paths(0, 0, 1, 1) == 8
+    all_paths = maze.paths(0, 0, 1, 1)
+    assert len(all_paths) == 8
