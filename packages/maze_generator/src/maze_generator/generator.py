@@ -5,8 +5,6 @@ from typing import NamedTuple
 
 from .maze import Maze
 
-MIN_PATHS = 10
-
 
 class WallToRemove(NamedTuple):
     """Represents a wall to potentially remove during maze generation."""
@@ -123,25 +121,9 @@ def _verify_path_requirement(
     return len(paths) >= min_paths
 
 
-def _open_more_walls(
-    maze: Maze,
-    possible_walls: list[WallToRemove],
-    min_paths: int,
-) -> None:
-    for wall in possible_walls:
-        if wall.is_top and maze.walls[wall.x][wall.y].top:
-            maze.walls[wall.x][wall.y].top = False
-        elif not wall.is_top and maze.walls[wall.x][wall.y].left:
-            maze.walls[wall.x][wall.y].left = False
-
-        if _verify_path_requirement(maze, min_paths):
-            return
-
-
 def generate_maze(
     width: int,
     height: int,
-    min_paths: int = MIN_PATHS,
     min_open_edges: int | None = None,
 ) -> Maze:
     """Generate a maze by random wall removals with fast connectivity heuristics."""
@@ -173,9 +155,14 @@ def generate_maze(
         min_open_edges=min_open_edges,
     ).carve()
 
-    if _verify_path_requirement(maze, min_paths):
-        return maze
+    min_paths = 10
+    for wall in possible_walls:
+        if len(maze.paths(0, 0, maze.width - 1, maze.height - 1)) >= min_paths:
+            break
 
-    _open_more_walls(maze, possible_walls, min_paths)
+        if wall.is_top:
+            maze.walls[wall.x][wall.y].top = False
+        else:
+            maze.walls[wall.x][wall.y].left = False
 
     return maze
