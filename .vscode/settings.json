@@ -27,6 +27,10 @@
         "/^uv run python -m pytest packages/maze_generator/tests/ --cov=packages/maze_generator/src --cov-report=term-missing$/": {
             "approve": true,
             "matchCommandLine": true
+        },
+        "/^prek run --all-files$/": {
+            "approve": true,
+            "matchCommandLine": true
         }
     }
 }
