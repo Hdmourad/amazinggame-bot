@@ -1,9 +1,9 @@
 """Maze generation algorithms."""
 
 import random
-from typing import NamedTuple
+from typing import NamedTuple, cast
 
-from amazing.game.maze import Maze
+from amazing.game.maze import Maze, Path
 
 
 class WallToRemove(NamedTuple):

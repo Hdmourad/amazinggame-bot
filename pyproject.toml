@@ -56,9 +56,6 @@ python = "./.venv"
 dev-dependencies = ["pytest", "pytest-cov", "ruff", "ty"]
 package = false
 
-[tool.uv.workspace]
-members = ["packages/*"]
-
 [tool.pytest.ini_options]
 addopts = "-vvv --cov=amazing --cov-report term-missing --cov-report html --cov-branch --cov-config=pyproject.toml --full-trace"
 minversion = "8.0"
