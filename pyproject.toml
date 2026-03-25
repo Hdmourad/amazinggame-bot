@@ -18,7 +18,7 @@ fix = true
 [tool.ruff.lint]
 preview = true
 select = ["ALL"]
-ignore = ["COM812"]
+ignore = ["COM812", "CPY001"]
 fixable = ["ALL"]
 unfixable = []
 
@@ -40,7 +40,7 @@ quote-style = "double"
 indent-style = "space"
 
 [tool.uv]
-dev-dependencies = ["pytest", "ruff", "ty"]
+dev-dependencies = ["pytest", "pytest-cov", "ruff", "ty"]
 package = false
 
 [tool.uv.workspace]

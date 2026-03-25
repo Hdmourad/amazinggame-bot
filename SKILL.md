@@ -39,7 +39,7 @@ def test_generate_maze_returns_grid():
 - Ensure tests still pass
 - Apply SOLID principles
 
-**Decision Point**: 
+**Decision Point**:
 - All tests passing? ✓ Move to next feature
 - Tests failing? → Debug and fix implementation
 - Code smells? → Refactor
@@ -86,17 +86,17 @@ ruff check --fix src/ tests/
 - Complexity: Functions should be ≤10 cyclomatic complexity
 - No unused imports or variables
 - Type hints for public APIs
+- No noqa comments without justification
+- No warnings/errors without justification
 
 ### Type Checking
 ```bash
-# Check with ty or pyright
+# Check with ty
 ty src/
 ```
 
 **Requirements**:
-- Public functions/classes must have type hints
-- Private functions should have type hints when non-obvious
-- Use `Optional[]` for nullable types
+- Public and private functions/classes must have type hints
 
 ### Formatting (Ruff)
 ```bash
@@ -153,6 +153,11 @@ ruff format src/ tests/
   - Update README.md if API changed
   - Document breaking changes
 
+- [ ] **The repo is clean**
+  ```bash
+  prek run --all-files
+  ```
+
 ---
 
 ## 5. Code Review Criteria
@@ -203,26 +208,6 @@ Add to `pyproject.toml`:
 ```toml
 [tool.ruff]
 target-version = "py314"
-line-length = 88
-
-[tool.ty]
-python_version = "3.14"
-warn_return_any = true
-warn_unused_configs = true
-```
-
-### Prek Hook (Recommended)
-```yaml
-# .prek-config.yaml
-repos:
-  - repo: https://github.com/charliermarsh/ruff-prek
-    rev: v0.x.x
-    hooks:
-      - id: ruff
-  - repo: https://github.com/pre-commit/mirrors-ty
-    rev: v1.x.x
-    hooks:
-      - id: ty
 ```
 
 ---
