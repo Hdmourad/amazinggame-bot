@@ -47,6 +47,31 @@ class Maze:
                 # Each cell has top and left walls
                 self.walls[row].append(Cell(top=True, left=True))
 
+    def __str__(self) -> str:
+        """Return an ASCII-art rendering of the maze."""
+        lines: list[str] = []
+
+        def top_line_for(row: int) -> str:
+            line = "+"
+            for x in range(self.width):
+                line += "-" if self.walls[row][x].top else " "
+                line += "+"
+            return line
+
+        def middle_line_for(row: int) -> str:
+            line = ""
+            for x in range(self.width):
+                line += "|" if self.walls[row][x].left else " "
+                line += " "
+            line += "|" if self.walls[row][self.width].left else " "
+            return line
+
+        for y in range(self.height):
+            lines.extend((top_line_for(y), middle_line_for(y)))
+
+        lines.append(top_line_for(self.height))
+        return "\n".join(lines)
+
     def paths(
         self,
         start_x: int,

@@ -93,6 +93,18 @@ def test_paths_count_simple_maze() -> None:
     assert len(all_paths) == 8
 
 
+def test_maze_str_representation() -> None:
+    """Verify maze ASCII rendering with all boundary walls present."""
+    maze = Maze(width=1, height=1)
+    maze.walls[0][0].top = True
+    maze.walls[0][0].left = True
+    maze.walls[1][0].left = True
+    maze.walls[0][1].top = True
+
+    expected = "+-+\n| |\n+-+"
+    assert str(maze) == expected
+
+
 def test_paths_count_simple_maze_with_walls() -> None:
     """Count paths on a 3x3 maze with some walls."""
     maze = Maze(width=3, height=3)
@@ -103,8 +115,9 @@ def test_paths_count_simple_maze_with_walls() -> None:
         maze.walls[1][x].top = False
         maze.walls[2][x].top = False
     maze.walls[1][1].top = True
-    maze.walls[1][2].top = True
+    maze.walls[2][1].top = True
     maze.walls[1][1].left = True
-    maze.walls[2][1].left = True
+    maze.walls[1][2].left = True
+    print(maze)
     all_paths = maze.paths(0, 0, 2, 2)
     assert len(all_paths) == 2
