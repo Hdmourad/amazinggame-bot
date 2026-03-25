@@ -73,20 +73,19 @@ class MazeCarver:
         maze: Maze,
         possible_walls: list[WallToRemove],
         dsu: DisjointSet,
-        start_node: int,
-        end_node: int,
-        min_open_edges: int,
     ) -> None:
         """Initialize carver state."""
         self.maze = maze
         self.possible_walls = possible_walls
         self.dsu = dsu
-        self.start_node = start_node
-        self.end_node = end_node
-        self.min_open_edges = min_open_edges
 
     def carve(self) -> None:
         """Carve walls until the target condition is reached."""
+        start_node = _cell_index(0, 0, self.maze.width)
+        end_node = _cell_index(
+            self.maze.width - 1, self.maze.height - 1, self.maze.width
+        )
+        min_open_edges = max(1, (self.maze.width * self.maze.height) // 3)
         open_edges = 0
         for wall in self.possible_walls:
             neighbors = _wall_neighbors(wall, self.maze.width, self.maze.height)
@@ -107,18 +106,10 @@ class MazeCarver:
             open_edges += 1
 
             if (
-                self.dsu.find(self.start_node) == self.dsu.find(self.end_node)
-                and open_edges >= self.min_open_edges
+                self.dsu.find(start_node) == self.dsu.find(end_node)
+                and open_edges >= min_open_edges
             ):
                 return
-
-
-def _verify_path_requirement(
-    maze: Maze,
-    min_paths: int,
-) -> bool:
-    paths = maze.paths(0, 0, maze.width - 1, maze.height - 1)
-    return len(paths) >= min_paths
 
 
 def generate_maze(
@@ -143,16 +134,11 @@ def generate_maze(
     random.shuffle(possible_walls)
 
     dsu = DisjointSet(width * height)
-    start_node = _cell_index(0, 0, width)
-    end_node = _cell_index(width - 1, height - 1, width)
 
     MazeCarver(
         maze=maze,
         possible_walls=possible_walls,
         dsu=dsu,
-        start_node=start_node,
-        end_node=end_node,
-        min_open_edges=min_open_edges,
     ).carve()
 
     min_paths = 10
