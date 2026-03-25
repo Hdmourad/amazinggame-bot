@@ -5,10 +5,10 @@ from maze_generator import generate_maze
 
 def test_generate_maze_basic() -> None:
     """Test that generate_maze creates a maze with at least 10 paths."""
-    maze = generate_maze(10, 10)
-    assert maze.width == 10
-    assert maze.height == 10
-    paths = maze.paths(0, 0, 9, 9)
+    maze = generate_maze(20, 20)
+    assert maze.width == 20
+    assert maze.height == 20
+    paths = maze.paths(0, 0, 19, 19)
     assert len(paths) >= 10
     print(maze)
     assert False
