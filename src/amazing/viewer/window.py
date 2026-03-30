@@ -9,7 +9,7 @@ import arcade
 from amazing.viewer.animation import set_date
 from amazing.viewer.constants import constants
 from amazing.viewer.maze import Maze
-from amazing.viewer.player import PlayerLayer
+from amazing.viewer.player import Player
 
 input_queue: Queue = Queue()
 logger = logging.getLogger(__name__)
@@ -29,7 +29,8 @@ class Window(arcade.Window):
         )
         self.background_sprites = arcade.SpriteList()
         self.maze = Maze()
-        self.player_layer = PlayerLayer(self.maze.maze.width, self.maze.maze.height)
+        self.players: dict[int, Player] = {}
+        self.players_sprite_list = arcade.SpriteList()
 
     def setup(self) -> None:
         """Build the tiled background sprite list once at startup."""
@@ -63,13 +64,18 @@ class Window(arcade.Window):
             data = input_queue.get()
             date_server = data["time"]
             set_date(date_server)
-            self.player_layer.update(data["players"])
+            for player_id, state in enumerate(data["players"]):
+                if player_id not in self.players:
+                    self.players[player_id] = Player()
+                    self.players_sprite_list.append(self.players[player_id].sprite)
+
+                self.players[player_id].update_from_state(state)
             logger.info("Received state update with players: %s", data["players"])
 
         self.clear()
         self.background_sprites.draw()
         self.maze.draw()
-        self.player_layer.draw()
+        self.players_sprite_list.draw()
 
 
 def gui_thread(addr: str, port: int) -> None:
