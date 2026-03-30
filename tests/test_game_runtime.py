@@ -198,5 +198,5 @@ def test_player_motion_methods_and_update() -> None:
     assert state["speed"] == pytest.approx(0.1)
     assert state["orientation"] == -20
     x_pos, y_pos = state["position"]
-    assert x_pos == pytest.approx(0.6879385241571817)
-    assert y_pos == pytest.approx(0.43159597133486625)
+    assert x_pos == pytest.approx(0.6879385)
+    assert y_pos == pytest.approx(0.5684040)

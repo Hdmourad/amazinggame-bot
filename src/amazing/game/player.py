@@ -86,7 +86,7 @@ class Player:
         if self.blocked:
             return
 
-        orientation_radians = math.radians(self._orientation)
+        orientation_radians = math.radians(-self._orientation)
         delta_x = math.cos(orientation_radians) * self._speed * delta_time
         delta_y = math.sin(orientation_radians) * self._speed * delta_time
         self._position = (self._position[0] + delta_x, self._position[1] + delta_y)
