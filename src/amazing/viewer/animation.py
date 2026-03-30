@@ -1,6 +1,7 @@
+"""Time-based animation helpers for viewer values."""
+
 from __future__ import annotations
 
-from collections.abc import Iterable
 from dataclasses import dataclass
 from time import perf_counter
 
@@ -8,16 +9,20 @@ _date_offset: float = 0
 
 
 def date() -> float:
+    """Return synchronized current time used by viewer animations."""
     return perf_counter() + _date_offset
 
 
-def set_date(date: float) -> None:
+def set_date(server_date: float) -> None:
+    """Initialize viewer/server time offset once from server timestamp."""
     global _date_offset
     if _date_offset == 0:
-        _date_offset = date - perf_counter()
+        _date_offset = server_date - perf_counter()
 
 
 class Animation:
+    """Represents one linear value transition over time."""
+
     def __init__(
         self,
         start_value: int,
@@ -25,6 +30,7 @@ class Animation:
         duration: float = 1.0,
         start_time: float | None = None,
     ) -> None:
+        """Create an animation segment with start/end values and timing."""
         self.duration = duration
         if start_time is None:
             self.start_time = date()
@@ -35,29 +41,38 @@ class Animation:
 
     @property
     def end_time(self) -> float:
+        """Return time when this animation segment ends."""
         return self.start_time + self.duration
 
     def value(self, time: float) -> int:
+        """Return interpolated value at the provided time."""
         factor = (time - self.start_time) / self.duration
         return int(self.start_value + (self.end_value - self.start_value) * factor)
 
 
 @dataclass
 class Step:
+    """Describes one target value and duration step in a sequence."""
+
     duration: float
     value: float
 
 
 class AnimatedValue:
+    """Holds and evaluates queued animation segments for a value."""
+
     def __init__(self, initial_value: int = 0) -> None:
+        """Initialize animated value with an optional starting value."""
         self._animations: list[Animation] = []
         self._last_value = initial_value
 
     def __len__(self) -> int:
+        """Return number of queued animation segments."""
         return len(self._animations)
 
     @property
     def value(self) -> int:
+        """Return current value after advancing active animations."""
         current_time = date()
         to_be_removed = []
         for animation in self._animations:
@@ -73,14 +88,16 @@ class AnimatedValue:
         return self._last_value
 
     def add_animation(self, animation: Animation) -> None:
+        """Append a single animation segment."""
         self._animations.append(animation)
 
     def add_animations(
         self,
         initial_value: float,
-        steps: Iterable[Step],
+        steps: list[Step],
         start_time: float | None = None,
     ) -> None:
+        """Append a sequence of animation steps starting at initial_value."""
         if not steps:
             return
         self._animations.append(
