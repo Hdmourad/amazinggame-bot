@@ -11,6 +11,15 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+
+class BlockedPlayerError(Exception):
+    """Exception raised when a blocked player attempts to perform an action."""
+
+    def __init__(self, player_name: str) -> None:
+        super().__init__(f"Player {player_name} is blocked.")
+        self.name = player_name
+
+
 # TODO manage a rotation speed
 
 
@@ -55,18 +64,17 @@ class Player:
             The command result returned to the client.
         """
         if self.blocked:
-            return "BLOCKED"
+            raise BlockedPlayerError(self.name)
         command = command_str.split()
         try:
-            for command_type in ("MOVE", "FIRE", "RADAR"):
-                if command[0] == command_type:
-                    return getattr(self, command_type.lower())(command[1:])
+            if command[0] in {"MOVE", "FIRE", "RADAR"}:
+                return getattr(self, command[0].lower())(command[1:])
             _raise_unknown_command(command_str)
         except ValueError as e:
             logger.warning("Problem for %s: %s", self.name, e)
             self.blocked_counter += 1
             if self.blocked:
-                return "BLOCKED"
+                raise BlockedPlayerError(self.name) from e
             return "KO"
 
     def update(self, delta_time: float) -> None:

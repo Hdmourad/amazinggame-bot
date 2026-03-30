@@ -13,6 +13,7 @@ from amazing.game.constants import (
     MAX_NB_PLAYERS,
 )
 from amazing.game.game import Game
+from amazing.game.player import BlockedPlayerError
 from amazing.network.data_handler import NetworkError
 from amazing.network.server import ClientData, Server
 
@@ -111,7 +112,11 @@ class GameServer(Server):
                         continue
                     command = self.read(player)
                     logger.info("Command [%s] %s", player.name, command)
-                    self.write(player, self.game.manage_command(player_id, command))
+                    try:
+                        self.write(player, self.game.manage_command(player_id, command))
+                    except BlockedPlayerError as e:
+                        logger.warning("Blocked player %s attempted a command", e.name)
+                        self.remove_client(player)
             self.game.update()
             for spectator in self.spectators:
                 self.write(spectator, json.dumps(self.game.state()))
