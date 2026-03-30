@@ -15,7 +15,7 @@ def date() -> float:
 
 def set_date(server_date: float) -> None:
     """Initialize viewer/server time offset once from server timestamp."""
-    global _date_offset
+    global _date_offset  # noqa:  PLW0603
     if _date_offset == 0:
         _date_offset = server_date - perf_counter()
 
@@ -25,8 +25,8 @@ class Animation:
 
     def __init__(
         self,
-        start_value: int,
-        end_value: int,
+        start_value: float,
+        end_value: float,
         duration: float = 1.0,
         start_time: float | None = None,
     ) -> None:
@@ -71,7 +71,7 @@ class AnimatedValue:
         return len(self._animations)
 
     @property
-    def value(self) -> int:
+    def value(self) -> float:
         """Return current value after advancing active animations."""
         current_time = date()
         to_be_removed = []
