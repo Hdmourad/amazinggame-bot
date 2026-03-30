@@ -19,19 +19,16 @@ class Player:
     def update_from_state(
         self,
         state: dict[str, Any],
-        *,
-        cell_width: float,
-        cell_height: float,
     ) -> None:
         """Apply server-side player state to the render sprite."""
         position = state.get("position", (0.5, 0.5))
         x_pos, y_pos = position
         orientation = state.get("orientation", 0)
 
-        self.sprite.width = 0.5 * cell_width
-        self.sprite.height = 0.25 * cell_height
-        self.sprite.center_x = constants.MAP_MIN_X + x_pos * cell_width
-        self.sprite.center_y = constants.MAP_MAX_Y - y_pos * cell_height
+        self.sprite.width = 0.5 * constants.CELL_WIDTH
+        self.sprite.height = 0.25 * constants.CELL_HEIGHT
+        self.sprite.center_x = constants.MAP_MIN_X + x_pos * constants.CELL_WIDTH
+        self.sprite.center_y = constants.MAP_MAX_Y - y_pos * constants.CELL_HEIGHT
         self.sprite.angle = -float(orientation)
 
 
@@ -49,16 +46,11 @@ class PlayerLayer:
 
     def update(self, players: list[dict[str, Any]]) -> None:
         """Rebuild sprites from the latest server player list."""
-        cell_width = constants.MAP_WIDTH / self.maze_width
-        cell_height = constants.MAP_HEIGHT / self.maze_height
-
         self.sprites = arcade.SpriteList()
         for state in players:
             player = Player(self.texture)
             player.update_from_state(
                 state,
-                cell_width=cell_width,
-                cell_height=cell_height,
             )
             self.sprites.append(player.sprite)
 

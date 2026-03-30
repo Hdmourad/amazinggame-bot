@@ -4,6 +4,8 @@ import colorsys
 import math
 from typing import ClassVar
 
+from amazing.game.constants import MAZE_DIMENSION
+
 
 def _team_color(hue: int) -> tuple[int, int, int]:
     red, green, blue = colorsys.hsv_to_rgb(((hue * math.pi / 2) % 360) / 360, 1, 1)
@@ -46,6 +48,8 @@ class Constants:
         self.MAP_MAX_Y = self.SCREEN_HEIGHT - self.MAP_MARGIN
         self.MAP_WIDTH = self.MAP_MAX_X - self.MAP_MIN_X
         self.MAP_HEIGHT = self.MAP_MAX_Y - self.MAP_MIN_Y
+        self.CELL_WIDTH = self.MAP_WIDTH / MAZE_DIMENSION
+        self.CELL_HEIGHT = self.MAP_HEIGHT / MAZE_DIMENSION
 
 
 constants: Constants = Constants()

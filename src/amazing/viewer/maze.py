@@ -4,6 +4,7 @@ from importlib.resources import files
 
 import arcade
 
+from amazing.game.constants import MAZE_DIMENSION
 from amazing.game.generator import generate_maze
 from amazing.viewer.constants import constants
 
@@ -13,7 +14,7 @@ class Maze:
 
     def __init__(self) -> None:
         """Initialize maze data and rendering resources."""
-        self.maze = generate_maze(30, 30)
+        self.maze = generate_maze(MAZE_DIMENSION, MAZE_DIMENSION)
         self.wall_texture = arcade.Sprite(
             str(files("amazing.viewer.resources.images").joinpath("brick.png"))
         )
@@ -25,9 +26,9 @@ class Maze:
         maze_width = self.maze.width
         maze_height = self.maze.height
 
-        cell_width = constants.MAP_WIDTH / maze_width
-        cell_height = constants.MAP_HEIGHT / maze_height
-        wall_thickness = max(6, int(min(cell_width, cell_height) * 0.18))
+        wall_thickness = max(
+            6, int(min(constants.CELL_WIDTH, constants.CELL_HEIGHT) * 0.18)
+        )
 
         self.wall_sprites = arcade.SpriteList()
 
@@ -39,10 +40,10 @@ class Maze:
         ) -> None:
             wall = arcade.Sprite()
             wall.texture = base_texture
-            wall.width = int(cell_width) + wall_thickness
+            wall.width = int(constants.CELL_WIDTH) + wall_thickness
             wall.height = wall_thickness
-            wall.center_x = constants.MAP_MIN_X + (x + 0.5) * cell_width
-            wall.center_y = constants.MAP_MAX_Y - y * cell_height
+            wall.center_x = constants.MAP_MIN_X + (x + 0.5) * constants.CELL_WIDTH
+            wall.center_y = constants.MAP_MAX_Y - y * constants.CELL_HEIGHT
             self.wall_sprites.append(wall)
 
         def _append_vertical_wall(
@@ -54,9 +55,9 @@ class Maze:
             wall = arcade.Sprite()
             wall.texture = base_texture
             wall.width = wall_thickness
-            wall.height = int(cell_height) + wall_thickness
-            wall.center_x = constants.MAP_MIN_X + x * cell_width
-            wall.center_y = constants.MAP_MAX_Y - (y + 0.5) * cell_height
+            wall.height = int(constants.CELL_HEIGHT) + wall_thickness
+            wall.center_x = constants.MAP_MIN_X + x * constants.CELL_WIDTH
+            wall.center_y = constants.MAP_MAX_Y - (y + 0.5) * constants.CELL_HEIGHT
             self.wall_sprites.append(wall)
 
         for x in range(maze_width + 1):
