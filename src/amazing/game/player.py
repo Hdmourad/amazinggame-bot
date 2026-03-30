@@ -40,6 +40,9 @@ def _raise_unknown_command(command_str: str) -> NoReturn:
     raise ValueError(message)
 
 
+_ANGLE_EPS = 1e-9  # threshold below which a direction component is treated as zero
+
+
 class Player:
     """Represents one player connected to the game server."""
 
@@ -134,16 +137,82 @@ class Player:
         self._orientation += 10
         return "OK"
 
-    def get_sensors(self) -> str:
-        """Return a sensor reading.
+    def _ray_distance(self, sensor_orientation: int) -> float:
+        """Return distance from player center to the nearest wall along a ray.
+
+        Uses a DDA algorithm on the cell grid.  The angle convention matches
+        ``update``: ``math.radians(-sensor_orientation)`` gives the direction
+        vector angle.
+
+        Args:
+            sensor_orientation: Ray direction in degrees.
 
         Returns:
-            A string".
+            Distance in cell units to the nearest wall.
         """
+        dx = math.cos(math.radians(-sensor_orientation))
+        dy = math.sin(math.radians(-sensor_orientation))
+
+        px, py = self.position
+        maze = self.game.maze
+
+        cx = max(0, min(maze.width - 1, math.floor(px)))
+        cy = max(0, min(maze.height - 1, math.floor(py)))
+
+        if abs(dx) < _ANGLE_EPS:
+            t_max_x = math.inf
+            t_delta_x = math.inf
+        else:
+            t_max_x = (
+                (math.floor(px + _ANGLE_EPS) + 1 - px) / dx
+                if dx > 0
+                else (math.ceil(px - _ANGLE_EPS) - 1 - px) / dx
+            )
+            t_delta_x = 1.0 / abs(dx)
+
+        if abs(dy) < _ANGLE_EPS:
+            t_max_y = math.inf
+            t_delta_y = math.inf
+        else:
+            t_max_y = (
+                (math.floor(py + _ANGLE_EPS) + 1 - py) / dy
+                if dy > 0
+                else (math.ceil(py - _ANGLE_EPS) - 1 - py) / dy
+            )
+            t_delta_y = 1.0 / abs(dy)
+
+        for _ in range(2 * (maze.width + maze.height)):
+            if t_max_x <= t_max_y:
+                wall_x = cx + (1 if dx >= 0 else 0)
+                if maze.walls[wall_x][cy].left:
+                    return t_max_x
+                cx += 1 if dx >= 0 else -1
+                t_max_x += t_delta_x
+            else:
+                wall_y = cy + (1 if dy >= 0 else 0)
+                if maze.walls[cx][wall_y].top:
+                    return t_max_y
+                cy += 1 if dy >= 0 else -1
+                t_max_y += t_delta_y
+
+        return float(maze.width + maze.height)  # pragma: no cover
+
+    def get_sensors(self) -> str:
+        """Return sensor data for the current player state.
+
+        Returns:
+            Space-separated string: time, x, y, orientation, speed,
+            front distance, right distance, rear distance, left distance.
+        """
+        front = self._ray_distance(self._orientation)
+        right = self._ray_distance(self._orientation - 90)
+        rear = self._ray_distance(self._orientation + 180)
+        left = self._ray_distance(self._orientation + 90)
         return (
             f"{self.game.cumulated_time:.2f} "
             f"{self.position[0]:.2f} {self.position[1]:.2f} "
-            f"{self._orientation} {self._speed:.2f}"
+            f"{self._orientation} {self._speed:.2f} "
+            f"{front:.2f} {right:.2f} {rear:.2f} {left:.2f}"
         )
 
     def state(self) -> PlayerState:

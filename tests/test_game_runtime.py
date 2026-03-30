@@ -13,6 +13,7 @@ from amazing.game.constants import (
     MAX_NB_PLAYERS,
 )
 from amazing.game.game import Game
+from amazing.game.maze import Maze
 from amazing.game.player import BlockedPlayerError, Player
 
 
@@ -200,3 +201,33 @@ def test_player_motion_methods_and_update() -> None:
     x_pos, y_pos = state["position"]
     assert x_pos == pytest.approx(0.6879385)
     assert y_pos == pytest.approx(0.5684040)
+
+
+def test_player_sensors_all_directions_in_1x1_maze() -> None:
+    """All 4 sensors return 0.50 from the centre of a walled 1x1 maze."""
+    game = Game()
+    game.maze = Maze(1, 1)
+    player = Player("alice", game)
+
+    parts = player.get_sensors().split()
+    assert parts[:5] == ["0.00", "0.50", "0.50", "0", "0.00"]
+    assert all(float(d) == pytest.approx(0.5) for d in parts[5:])
+
+
+def test_player_sensors_pass_through_open_walls() -> None:
+    """Sensors advance through open walls and stop at the next closed one."""
+    game = Game()
+    game.maze = Maze(2, 2)
+    # Remove all internal walls so only perimeters remain
+    game.maze.walls[1][0].left = False
+    game.maze.walls[1][1].left = False
+    game.maze.walls[0][1].top = False
+    game.maze.walls[1][1].top = False
+    player = Player("alice", game)
+
+    parts = player.get_sensors().split()
+    front, right, rear, left = (float(x) for x in parts[5:])
+    assert front == pytest.approx(1.5)  # east: passes open vertical wall
+    assert right == pytest.approx(1.5)  # +y: passes open horizontal wall
+    assert rear == pytest.approx(0.5)  # west: left perimeter immediately
+    assert left == pytest.approx(0.5)  # -y: top perimeter immediately
