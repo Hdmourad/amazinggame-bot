@@ -6,6 +6,7 @@ from queue import Queue
 
 import arcade
 
+from amazing.game.maze import Maze as GameMaze
 from amazing.viewer.animation import set_date
 from amazing.viewer.constants import constants
 from amazing.viewer.maze import Maze
@@ -29,6 +30,7 @@ class Window(arcade.Window):
         )
         self.background_sprites = arcade.SpriteList()
         self.maze = Maze()
+        self._maze_loaded_from_server = False
         self.players: dict[int, Player] = {}
         self.players_sprite_list = arcade.SpriteList()
 
@@ -64,6 +66,12 @@ class Window(arcade.Window):
             data = input_queue.get()
             date_server = data["time"]
             set_date(date_server)
+
+            if not self._maze_loaded_from_server and data.get("maze") is not None:
+                self.maze.maze = GameMaze.deserialize(data["maze"])
+                self.maze.setup()
+                self._maze_loaded_from_server = True
+
             for player_id, state in enumerate(data["players"]):
                 if player_id not in self.players:
                     self.players[player_id] = Player()

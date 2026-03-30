@@ -1,13 +1,27 @@
 """Core game state and command orchestration."""
 
+from __future__ import annotations
+
 import logging
 from time import perf_counter
+from typing import TYPE_CHECKING, TypedDict
 
 from amazing.game import Maze, generate_maze
 from amazing.game.constants import MAX_NB_PLAYERS, MAZE_DIMENSION
 from amazing.game.player import Player, PlayerState
 
+if TYPE_CHECKING:
+    from amazing.game.maze import MazeState
+
 logger = logging.getLogger(__name__)
+
+
+class GameState(TypedDict):
+    """Serializable game state sent to clients."""
+
+    time: float
+    players: list[PlayerState]
+    maze: MazeState | None
 
 
 class Game:
@@ -63,15 +77,16 @@ class Game:
         self.cumulated_time += delta_time
         logger.debug("Cumulated time: %.3f", self.cumulated_time)
 
-    def state(self) -> dict[str, float | list[PlayerState]]:
+    def state(self) -> GameState:
         """Return a serializable snapshot of the game state.
 
         Returns:
             A dictionary containing elapsed time and serialized players.
         """
         players: list[PlayerState] = [player.state() for player in self.players]
-        data: dict[str, float | list[PlayerState]] = {
+        data: GameState = {
             "time": self.cumulated_time,
             "players": players,
+            "maze": self.maze.serialize() if self.maze is not None else None,
         }
         return data

@@ -1,7 +1,7 @@
 """Maze data structure for maze generator."""
 
 from collections import UserList, deque
-from typing import NamedTuple
+from typing import NamedTuple, TypedDict
 
 from .cell import Cell
 
@@ -19,6 +19,21 @@ class Path(UserList):
     def __str__(self) -> str:
         """Return a user-readable representation of the path."""
         return "[" + ", ".join(f"({c.x},{c.y})" for c in self.data) + "]"
+
+
+class CellState(TypedDict):
+    """Serializable wall state for one wall-entry cell."""
+
+    top: bool
+    left: bool
+
+
+class MazeState(TypedDict):
+    """Serializable maze payload."""
+
+    width: int
+    height: int
+    walls: list[list[CellState]]
 
 
 class Maze:
@@ -65,6 +80,44 @@ class Maze:
     def __str__(self) -> str:
         """Return an ASCII-art rendering of the maze."""
         return self.highlighted_path(Path())
+
+    def serialize(self) -> MazeState:
+        """Serialize maze dimensions and wall states.
+
+        Returns:
+            A payload containing dimensions and all top/left wall values.
+        """
+        walls = [
+            [
+                {
+                    "top": self.walls[x][y].top,
+                    "left": self.walls[x][y].left,
+                }
+                for y in range(self.height + 1)
+            ]
+            for x in range(self.width + 1)
+        ]
+
+        return {
+            "width": self.width,
+            "height": self.height,
+            "walls": walls,
+        }
+
+    @classmethod
+    def deserialize(cls, data: MazeState) -> Maze:
+        """Build a maze instance from serialized wall states.
+
+        Returns:
+            A reconstructed maze with the same dimensions and wall values.
+        """
+        maze = cls(data["width"], data["height"])
+        for x in range(maze.width + 1):
+            for y in range(maze.height + 1):
+                cell = data["walls"][x][y]
+                maze.walls[x][y].top = cell["top"]
+                maze.walls[x][y].left = cell["left"]
+        return maze
 
     def highlighted_path(self, path: Path) -> str:
         """Return an ASCII-art rendering of the maze with a path highlighted."""

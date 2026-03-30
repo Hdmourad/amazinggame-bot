@@ -164,3 +164,35 @@ def test_is_connected_start_equals_end_is_true() -> None:
     """Connectivity is always true when start and end are the same cell."""
     maze = Maze(width=2, height=2)
     assert maze.is_connected(1, 1, 1, 1)
+
+
+def test_maze_serialize_contains_dimensions_and_walls() -> None:
+    """Serialized maze should include dimensions and all wall entries."""
+    maze = Maze(width=2, height=1)
+    maze.walls[1][1].top = False
+    maze.walls[2][0].left = False
+
+    data = maze.serialize()
+
+    assert data["width"] == 2
+    assert data["height"] == 1
+    assert len(data["walls"]) == 3
+    assert len(data["walls"][0]) == 2
+    assert data["walls"][1][1]["top"] is False
+    assert data["walls"][2][0]["left"] is False
+
+
+def test_maze_deserialize_rebuilds_walls() -> None:
+    """Deserialization should recreate a maze with the same wall states."""
+    source = Maze(width=2, height=2)
+    source.walls[1][0].left = False
+    source.walls[0][2].top = False
+
+    restored = Maze.deserialize(source.serialize())
+
+    assert restored.width == source.width
+    assert restored.height == source.height
+    for x in range(source.width + 1):
+        for y in range(source.height + 1):
+            assert restored.walls[x][y].top is source.walls[x][y].top
+            assert restored.walls[x][y].left is source.walls[x][y].left

@@ -115,6 +115,7 @@ def test_game_update_manage_command_and_state(monkeypatch: pytest.MonkeyPatch) -
                 "position": (0.5, 0.5),
             }
         ],
+        "maze": None,
     }
 
 
