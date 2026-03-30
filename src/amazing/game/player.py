@@ -2,7 +2,7 @@
 
 import logging
 import math
-from typing import TYPE_CHECKING, NoReturn
+from typing import TYPE_CHECKING, NoReturn, TypedDict
 
 from amazing.game.constants import MAX_BLOCKED_COUNTER
 
@@ -11,7 +11,16 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-type PlayerState = dict[str, str | bool | int | float | tuple[float, float]]
+
+class PlayerState(TypedDict):
+    """Serializable player state payload."""
+
+    name: str
+    blocked: bool
+    score: int
+    speed: float
+    orientation: int
+    position: tuple[float, float]
 
 
 def _raise_unknown_command(command_str: str) -> NoReturn:
