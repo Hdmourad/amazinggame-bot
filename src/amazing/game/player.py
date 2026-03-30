@@ -16,6 +16,7 @@ class BlockedPlayerError(Exception):
     """Exception raised when a blocked player attempts to perform an action."""
 
     def __init__(self, player_name: str) -> None:
+        """Initialize with the name of the blocked player."""
         super().__init__(f"Player {player_name} is blocked.")
         self.name = player_name
 
@@ -62,6 +63,9 @@ class Player:
 
         Returns:
             The command result returned to the client.
+
+        Raises:
+            BlockedPlayerError: If the player is currently blocked.
         """
         if self.blocked:
             raise BlockedPlayerError(self.name)

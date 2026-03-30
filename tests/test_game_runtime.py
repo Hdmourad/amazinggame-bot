@@ -13,7 +13,7 @@ from amazing.game.constants import (
     MAX_NB_PLAYERS,
 )
 from amazing.game.game import Game
-from amazing.game.player import Player
+from amazing.game.player import BlockedPlayerError, Player
 
 
 class StubPlayer:
@@ -57,13 +57,13 @@ def test_game_initialization_and_start_reset_timers(
     monkeypatch.setattr(game_module, "perf_counter", lambda: next(times))
 
     game = Game()
-    assert game.start_time == 10.0
-    assert game.last_update_time == 10.0
+    assert game.start_time == pytest.approx(10.0)
+    assert game.last_update_time == pytest.approx(10.0)
     assert game.finished is False
 
     game.start()
-    assert game.start_time == 20.0
-    assert game.last_update_time == 20.0
+    assert game.start_time == pytest.approx(20.0)
+    assert game.last_update_time == pytest.approx(20.0)
 
 
 def test_game_manage_command_returns_blocked_for_unknown_player(
@@ -153,7 +153,8 @@ def test_player_invalid_commands_increment_block_counter() -> None:
 
     assert player.manage_command("INVALID") == "KO"
     assert player.manage_command("INVALID") == "KO"
-    assert player.manage_command("INVALID") == "BLOCKED"
+    with pytest.raises(BlockedPlayerError):
+        player.manage_command("INVALID")
     assert player.blocked_counter == 4
     assert player.blocked is True
 
@@ -165,7 +166,8 @@ def test_player_blocked_update_and_state() -> None:
     player.turn_right()
     player.blocked_counter = MAX_BLOCKED_COUNTER + 1
 
-    assert player.manage_command("MOVE north") == "BLOCKED"
+    with pytest.raises(BlockedPlayerError):
+        player.manage_command("MOVE north")
     player.update(0.5)
     assert player.state() == {
         "name": "alice",
