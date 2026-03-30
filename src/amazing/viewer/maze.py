@@ -31,65 +31,51 @@ class Maze:
 
         self.wall_sprites = arcade.SpriteList()
 
+        def _append_horizontal_wall(
+            self: Maze,
+            *,
+            x: int,
+            y: int,
+        ) -> None:
+            wall = arcade.Sprite()
+            wall.texture = base_texture
+            wall.width = int(cell_width) + wall_thickness
+            wall.height = wall_thickness
+            wall.center_x = constants.MAP_MIN_X + (x + 0.5) * cell_width
+            wall.center_y = constants.MAP_MAX_Y - y * cell_height
+            self.wall_sprites.append(wall)
+
+        def _append_vertical_wall(
+            self: Maze,
+            *,
+            x: int,
+            y: int,
+        ) -> None:
+            wall = arcade.Sprite()
+            wall.texture = base_texture
+            wall.width = wall_thickness
+            wall.height = int(cell_height) + wall_thickness
+            wall.center_x = constants.MAP_MIN_X + x * cell_width
+            wall.center_y = constants.MAP_MAX_Y - (y + 0.5) * cell_height
+            self.wall_sprites.append(wall)
+
         for x in range(maze_width + 1):
             for y in range(maze_height + 1):
                 cell = self.maze.walls[x][y]
 
                 if x < maze_width and cell.top:
-                    self._append_horizontal_wall(
-                        base_texture=base_texture,
+                    _append_horizontal_wall(
+                        self,
                         x=x,
                         y=y,
-                        cell_width=cell_width,
-                        cell_height=cell_height,
-                        wall_thickness=wall_thickness,
                     )
 
                 if y < maze_height and cell.left:
-                    self._append_vertical_wall(
-                        base_texture=base_texture,
+                    _append_vertical_wall(
+                        self,
                         x=x,
                         y=y,
-                        cell_width=cell_width,
-                        cell_height=cell_height,
-                        wall_thickness=wall_thickness,
                     )
-
-    def _append_horizontal_wall(
-        self,
-        *,
-        base_texture: arcade.Texture,
-        x: int,
-        y: int,
-        cell_width: float,
-        cell_height: float,
-        wall_thickness: int,
-    ) -> None:
-        wall = arcade.Sprite()
-        wall.texture = base_texture
-        wall.width = int(cell_width) + wall_thickness
-        wall.height = wall_thickness
-        wall.center_x = constants.MAP_MIN_X + (x + 0.5) * cell_width
-        wall.center_y = constants.MAP_MAX_Y - y * cell_height
-        self.wall_sprites.append(wall)
-
-    def _append_vertical_wall(
-        self,
-        *,
-        base_texture: arcade.Texture,
-        x: int,
-        y: int,
-        cell_width: float,
-        cell_height: float,
-        wall_thickness: int,
-    ) -> None:
-        wall = arcade.Sprite()
-        wall.texture = base_texture
-        wall.width = wall_thickness
-        wall.height = int(cell_height) + wall_thickness
-        wall.center_x = constants.MAP_MIN_X + x * cell_width
-        wall.center_y = constants.MAP_MAX_Y - (y + 0.5) * cell_height
-        self.wall_sprites.append(wall)
 
     def draw(self) -> None:
         """Draw maze wall sprites."""
