@@ -77,12 +77,14 @@ class Window(arcade.Window):
                     self.players[player_id] = Player()
                     self.players_sprite_list.append(self.players[player_id].sprite)
 
-                self.players[player_id].update_from_state(state)
+                self.players[player_id].update_from_state(state, date_server)
             logger.info("Received state update with players: %s", data["players"])
 
         self.clear()
         self.background_sprites.draw()
         self.maze.draw()
+        for player in self.players.values():
+            player.draw_trace()
         self.players_sprite_list.draw()
 
 
