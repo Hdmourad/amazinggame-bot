@@ -92,23 +92,39 @@ class Player:
         self._position = (self._position[0] + delta_x, self._position[1] + delta_y)
 
     def accelerate(self) -> str:
-        """Increase player speed by 0.1 cell/s."""
+        """Increase player speed by 0.1 cell/s.
+
+        Returns:
+            "OK" status string.
+        """
         self._speed += 0.1
         return "OK"
 
     def decelerate(self) -> str:
-        """Decrease player speed by 0.1 cell/s."""
+        """Decrease player speed by 0.1 cell/s.
+
+        Returns:
+            "OK" status string.
+        """
         self._speed -= 0.1
         self._speed = max(self._speed, 0)
         return "OK"
 
     def turn_right(self) -> str:
-        """Rotate orientation by -10 degrees."""
+        """Rotate orientation by -10 degrees.
+
+        Returns:
+            "OK" status string.
+        """
         self._orientation -= 10
         return "OK"
 
     def turn_left(self) -> str:
-        """Rotate orientation by 10 degrees."""
+        """Rotate orientation by 10 degrees.
+
+        Returns:
+            "OK" status string.
+        """
         self._orientation += 10
         return "OK"
 

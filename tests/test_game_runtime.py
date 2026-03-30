@@ -120,9 +120,10 @@ def test_game_update_manage_command_and_state(monkeypatch: pytest.MonkeyPatch) -
 @pytest.mark.parametrize(
     ("command", "method_name", "expected"),
     [
-        ("MOVE north", "move", "MOVE_OK"),
-        ("FIRE east", "fire", "FIRE_OK"),
-        ("RADAR area", "radar", "RADAR_OK"),
+        ("ACCELERATE", "accelerate", "OK"),
+        ("DECELERATE", "decelerate", "OK"),
+        ("TURN_RIGHT", "turn_right", "OK"),
+        ("TURN_LEFT", "turn_left", "OK"),
     ],
 )
 def test_player_dispatches_known_commands(
@@ -136,8 +137,7 @@ def test_player_dispatches_known_commands(
     monkeypatch.setattr(
         Player,
         method_name,
-        lambda self, _args, result=expected: result,
-        raising=False,
+        lambda self, result=expected: result,
     )
 
     assert player.manage_command(command) == expected
