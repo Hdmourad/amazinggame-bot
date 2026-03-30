@@ -71,8 +71,8 @@ class Player:
             raise BlockedPlayerError(self.name)
         command = command_str.split()
         try:
-            if command[0] in {"MOVE", "FIRE", "RADAR"}:
-                return getattr(self, command[0].lower())(command[1:])
+            if command[0] in {"ACCELERATE", "DECELERATE", "TURN_RIGHT", "TURN_LEFT"}:
+                return getattr(self, command[0].lower())()
             _raise_unknown_command(command_str)
         except ValueError as e:
             logger.warning("Problem for %s: %s", self.name, e)
@@ -91,21 +91,26 @@ class Player:
         delta_y = math.sin(orientation_radians) * self._speed * delta_time
         self._position = (self._position[0] + delta_x, self._position[1] + delta_y)
 
-    def accelerate(self) -> None:
+    def accelerate(self) -> str:
         """Increase player speed by 0.1 cell/s."""
         self._speed += 0.1
+        return "OK"
 
-    def decelerate(self) -> None:
+    def decelerate(self) -> str:
         """Decrease player speed by 0.1 cell/s."""
         self._speed -= 0.1
+        self._speed = max(self._speed, 0)
+        return "OK"
 
-    def turn_right(self) -> None:
+    def turn_right(self) -> str:
         """Rotate orientation by -10 degrees."""
         self._orientation -= 10
+        return "OK"
 
-    def turn_left(self) -> None:
+    def turn_left(self) -> str:
         """Rotate orientation by 10 degrees."""
         self._orientation += 10
+        return "OK"
 
     def state(self) -> PlayerState:
         """Return a serializable view of the player state.
