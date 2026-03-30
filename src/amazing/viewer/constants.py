@@ -27,7 +27,7 @@ class Constants:
             self.SCORE_MARGIN = 100
             self.SCORE_FONT_SIZE = 24
             self.SCORE_TEAM_SIZE = 190
-            self.MAP_MARGIN = 170
+            self.MAP_MARGIN = 30
         else:
             self.SCREEN_WIDTH = 800
             self.SCREEN_HEIGHT = 600

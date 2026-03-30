@@ -8,6 +8,7 @@ import arcade
 
 from amazing.viewer.animation import set_date
 from amazing.viewer.constants import constants
+from amazing.viewer.maze import Maze
 
 input_queue: Queue = Queue()
 logger = logging.getLogger(__name__)
@@ -26,6 +27,7 @@ class Window(arcade.Window):
             str(files("amazing.viewer.resources.images").joinpath("concrete.jpg"))
         )
         self.background_sprites = arcade.SpriteList()
+        self.maze = Maze()
 
     def setup(self) -> None:
         """Build the tiled background sprite list once at startup."""
@@ -51,6 +53,8 @@ class Window(arcade.Window):
                 x += tile_width
             y += tile_height
 
+        self.maze.setup()
+
     def on_draw(self) -> None:
         """Render one frame of the viewer."""
         if not input_queue.empty():
@@ -60,6 +64,7 @@ class Window(arcade.Window):
 
         self.clear()
         self.background_sprites.draw()
+        self.maze.draw()
 
 
 def gui_thread(addr: str, port: int) -> None:
