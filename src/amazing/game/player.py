@@ -126,6 +126,7 @@ class Player:
             "OK" status string.
         """
         self._orientation -= 10
+        self._orientation = ((self._orientation % 360) + 360) % 360
         return "OK"
 
     def turn_left(self) -> str:
@@ -135,6 +136,7 @@ class Player:
             "OK" status string.
         """
         self._orientation += 10
+        self._orientation = ((self._orientation % 360) + 360) % 360
         return "OK"
 
     def _ray_distance(self, sensor_orientation: int) -> float:

@@ -176,7 +176,7 @@ def test_player_blocked_update_and_state() -> None:
         "blocked": True,
         "score": 0,
         "speed": pytest.approx(0.1),
-        "orientation": -10,
+        "orientation": 350,
         "position": (0.5, 0.5),
     }
 
@@ -198,7 +198,7 @@ def test_player_motion_methods_and_update() -> None:
 
     state = player.state()
     assert state["speed"] == pytest.approx(0.1)
-    assert state["orientation"] == -20
+    assert state["orientation"] == 340
     x_pos, y_pos = state["position"]
     assert x_pos == pytest.approx(0.6879385)
     assert y_pos == pytest.approx(0.5684040)
