@@ -41,8 +41,8 @@ class Player:
         x_pos, y_pos = position
         orientation = state.get("orientation", 0)
 
-        self.sprite.width = 0.5 * constants.CELL_WIDTH
-        self.sprite.height = 0.25 * constants.CELL_HEIGHT
+        self.sprite.width = 0.8 * constants.CELL_WIDTH
+        self.sprite.height = 0.4 * constants.CELL_HEIGHT
         self.sprite.center_x = constants.MAP_MIN_X + x_pos * constants.CELL_WIDTH
         self.sprite.center_y = constants.MAP_MAX_Y - y_pos * constants.CELL_HEIGHT
         self.sprite.angle = -float(orientation)
