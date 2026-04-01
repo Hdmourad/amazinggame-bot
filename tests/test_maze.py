@@ -105,7 +105,7 @@ def test_maze_str_representation() -> None:
     maze.walls[0][1].left = True
     maze.walls[1][0].top = True
 
-    expected = "+-+\n| |\n+-+"
+    expected = "+--+\n|  |\n+--+"
     assert str(maze) == expected
 
 

@@ -65,7 +65,7 @@ class Maze:
     def _top_line_for(self, row: int) -> str:
         line = "+"
         for x in range(self.width):
-            line += "-" if self.walls[x][row].top else " "
+            line += "--" if self.walls[x][row].top else "  "
             line += "+"
         return line
 
@@ -73,7 +73,7 @@ class Maze:
         line = ""
         for x in range(self.width):
             line += "|" if self.walls[x][row].left else " "
-            line += "#" if (x, row) in path else " "
+            line += "##" if (x, row) in path else "  "
         line += "|" if self.walls[self.width][row].left else " "
         return line
 
@@ -87,7 +87,7 @@ class Maze:
         Returns:
             A payload containing dimensions and all top/left wall values.
         """
-        walls = [
+        walls: list[list[CellState]] = [
             [
                 {
                     "top": self.walls[x][y].top,
