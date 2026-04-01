@@ -7,9 +7,11 @@ import arcade
 
 from amazing.viewer.constants import constants
 
-POSITION_TRACE_DURATION = 3.0  # seconds of history to display
-DOT_RADIUS = 3  # pixels
+POSITION_TRACE_DURATION = 10.0  # seconds of history to display
+POSITION_TRACE_PERIOD = 0.1  # seconds between recorded positions
+DOT_RADIUS = 6  # pixels
 DOT_COLOR = (200, 200, 200, 200)  # light gray with transparency
+
 
 texture = arcade.load_texture(
     str(files("amazing.viewer.resources.images").joinpath("car.png"))
@@ -50,7 +52,11 @@ class Player:
         # Record position history with timestamp
         screen_x = self.sprite.center_x
         screen_y = self.sprite.center_y
-        self.position_history.append((current_time, screen_x, screen_y))
+        if (
+            not self.position_history
+            or current_time - self.position_history[-1][0] >= POSITION_TRACE_PERIOD
+        ):
+            self.position_history.append((current_time, screen_x, screen_y))
 
         # Prune history older than POSITION_TRACE_DURATION
         cutoff_time = current_time - POSITION_TRACE_DURATION
