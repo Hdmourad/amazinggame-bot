@@ -90,21 +90,25 @@ class Score:
         draw_text(
             f"Time: {self.time_str(self.time)}",
             constants.SCORE_MARGIN,
-            constants.SCORE_HEIGHT - constants.SCORE_TIME_MARGIN,
+            constants.SCORE_HEIGHT
+            - constants.SCORE_TIME_MARGIN
+            - constants.SCORE_FONT_SIZE,
             (255, 255, 255),
             size=constants.SCORE_FONT_SIZE,
         )
         draw_text(
             f"{self.addr} : {self.port}",
             constants.SCORE_MARGIN,
-            constants.SCORE_HEIGHT - int(constants.SCORE_TIME_MARGIN * 1.5),
+            constants.SCORE_HEIGHT
+            - constants.SCORE_TIME_MARGIN
+            - 2 * constants.SCORE_FONT_SIZE,
             (255, 255, 255),
             size=constants.SCORE_FONT_SIZE - 4,
         )
         for index, team_data in enumerate(
             sorted(self.teams_data, key=lambda td: td.score)
         ):
-            team_size = constants.SCORE_HEIGHT // (len(self.teams_data) + 2)
+            team_size = constants.SCORE_HEIGHT // (len(self.teams_data) + 1)
             team_offset = team_size + index * team_size
 
             draw_text(
@@ -132,18 +136,12 @@ class Score:
                     size=constants.SCORE_FONT_SIZE - 5,
                 )
                 draw_text(
-                    f"Visited Cells: {team_data.nb_visited_cells}",
+                    f"Visited Cells: {team_data.nb_visited_cells:3d}     "
+                    f"Time: {self.time_str(team_data.race_time)}",
                     constants.SCORE_MARGIN,
                     team_offset - 2 * team_size // 4,
                     team_data.color,
-                    size=constants.SCORE_FONT_SIZE - 10,
-                )
-                draw_text(
-                    f"Time: {self.time_str(team_data.race_time)}",
-                    constants.SCORE_MARGIN,
-                    team_offset - 3 * team_size // 4,
-                    team_data.color,
-                    size=constants.SCORE_FONT_SIZE - 10,
+                    size=constants.SCORE_FONT_SIZE - 8,
                 )
 
     def update(self, server_data: dict) -> None:
