@@ -134,7 +134,9 @@ class Score:
             self.teams_data.append(
                 TeamData(
                     name=player_data["name"],
-                    color=team_color(player_data["id"] * 30 % 360),
+                    color=team_color(
+                        player_data["id"] * 180 // len(server_data["players"])
+                    ),
                     blocked=player_data["blocked"],
                     score=player_data["score"],
                 )

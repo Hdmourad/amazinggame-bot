@@ -9,7 +9,7 @@ from amazing.viewer.constants import constants, team_color
 from amazing.viewer.utils import hue_changed_texture
 
 POSITION_TRACE_DURATION = 10.0  # seconds of history to display
-POSITION_TRACE_PERIOD = 0.1  # seconds between recorded positions
+POSITION_TRACE_PERIOD = 0.2  # seconds between recorded positions
 
 
 class Player:
@@ -38,16 +38,18 @@ class Player:
         self,
         state: dict[str, Any],
         current_time: float,
+        nb_players: int,
     ) -> None:
         """Apply server-side player state to the render sprite.
 
         Args:
             state: Player state dict from server.
             current_time: Current server time in seconds.
+            nb_players: Total number of players in the game.
         """
         if self.id is None:
             self.id = int(state["id"])
-            self.hue = self.id * 30 % 360
+            self.hue = self.id * 180 // nb_players
             self.color = team_color(self.hue)
             self.sprite.texture = hue_changed_texture(
                 str(files("amazing.viewer.resources.images").joinpath("car.png")),

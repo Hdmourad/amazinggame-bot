@@ -81,7 +81,9 @@ class Window(arcade.Window):
                     self.players[player_id] = Player()
                     self.players_sprite_list.append(self.players[player_id].sprite)
 
-                self.players[player_id].update_from_state(state, date_server)
+                self.players[player_id].update_from_state(
+                    state, date_server, len(data["players"])
+                )
             logger.info("Received state update with players: %s", data["players"])
 
         self.clear()
