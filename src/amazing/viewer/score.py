@@ -79,10 +79,15 @@ class Score:
             )
         )
 
+    @staticmethod
+    def time_str(seconds: float) -> str:
+        minutes, seconds = divmod(seconds, 60)
+        return f"{int(minutes)}:{int(seconds):02d}.{int((seconds - int(seconds)) * 100):02d}"
+
     def draw(self) -> None:
         self.shape_list.draw()
         draw_text(
-            f"Time: {int(self.time)}",
+            f"Time: {self.time_str(self.time)}",
             constants.SCORE_MARGIN,
             constants.SCORE_HEIGHT - constants.SCORE_TIME_MARGIN,
             (255, 255, 255),
@@ -130,7 +135,7 @@ class Score:
                     constants.SCORE_MARGIN,
                     team_offset - 2 * team_size // 4,
                     team_data.color,
-                    size=constants.SCORE_FONT_SIZE - 5,
+                    size=constants.SCORE_FONT_SIZE - 10,
                 )
 
     def update(self, server_data: dict) -> None:
