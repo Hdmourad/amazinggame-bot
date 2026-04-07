@@ -2,12 +2,16 @@
 
 import colorsys
 import math
-from typing import ClassVar
 
 from amazing.game.constants import MAZE_DIMENSION
 
 
-def _team_color(hue: int) -> tuple[int, int, int]:
+def team_color(hue: int) -> tuple[int, int, int]:
+    """Converts a hue value to an RGB color tuple.
+
+    Returns:
+        An RGB color tuple with values from 0 to 255.
+    """
     red, green, blue = colorsys.hsv_to_rgb(((hue * math.pi / 2) % 360) / 360, 1, 1)
     return int(red * 255), int(green * 255), int(blue * 255)
 
@@ -16,10 +20,6 @@ class Constants:
     """Container for viewer layout and color constants."""
 
     SCREEN_TITLE = "Amazing Viewer"
-    TEAM_HUES: ClassVar[dict[int, int]] = {0: 0, 1: 30, 2: 65, 3: 120}
-    TEAM_COLORS: ClassVar[dict[int, tuple[int, int, int]]] = {
-        team: _team_color(hue) for team, hue in TEAM_HUES.items()
-    }
 
     def resize(self, *, small_window: bool) -> None:
         """Apply either normal or small-window screen layout values."""

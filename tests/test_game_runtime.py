@@ -174,6 +174,7 @@ def test_player_blocked_update_and_state() -> None:
         player.manage_command("MOVE north")
     player.update(0.5)
     assert player.state() == {
+        "id": 0,
         "name": "alice",
         "blocked": True,
         "score": 0,

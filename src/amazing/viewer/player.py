@@ -5,12 +5,11 @@ from typing import Any
 
 import arcade
 
-from amazing.viewer.constants import constants
+from amazing.viewer.constants import constants, team_color
 from amazing.viewer.utils import hue_changed_texture
 
 POSITION_TRACE_DURATION = 10.0  # seconds of history to display
 POSITION_TRACE_PERIOD = 0.1  # seconds between recorded positions
-DOT_COLOR = (200, 200, 200, 200)  # light gray with transparency
 
 
 class Player:
@@ -28,6 +27,12 @@ class Player:
         self.position_history: list[tuple[float, float, float]] = []  # (time, x, y)
         self.shape_list = arcade.shape_list.ShapeElementList()
         self.id: int | None = None
+        self.hue = 0
+        self.color: tuple[int, int, int] = (255, 255, 255)
+
+    def dot_color(self) -> tuple[int, int, int, int]:
+        """Return the RGBA color for the position trace dots."""
+        return (*self.color, 100)
 
     def update_from_state(
         self,
@@ -42,9 +47,11 @@ class Player:
         """
         if self.id is None:
             self.id = int(state["id"])
+            self.hue = self.id * 30 % 360
+            self.color = team_color(self.hue)
             self.sprite.texture = hue_changed_texture(
                 str(files("amazing.viewer.resources.images").joinpath("car.png")),
-                target_hue=self.id * 30 % 360,
+                target_hue=self.hue,
             )
         position = state.get("position", (0.5, 0.5))
         x_pos, y_pos = position
@@ -77,7 +84,7 @@ class Player:
                 int(y),
                 constants.DOT_RADIUS,
                 constants.DOT_RADIUS,
-                DOT_COLOR,
+                self.dot_color(),
             )
             self.shape_list.append(circle)
 
