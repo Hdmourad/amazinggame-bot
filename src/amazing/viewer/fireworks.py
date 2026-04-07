@@ -1,4 +1,3 @@
-import logging  # TODO remove
 from importlib.resources import files
 from pathlib import Path
 from time import perf_counter
@@ -24,9 +23,6 @@ class Firework:
         self.start_time = perf_counter()
 
     def render(self):
-        logging.error(
-            "Rendering firework at time %.2f", perf_counter() - self.start_time
-        )
         self.shadertoy.render(time=perf_counter() - self.start_time)
 
     def finished(self):
