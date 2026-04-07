@@ -1,9 +1,19 @@
 """Viewer constants and size presets."""
 
 import colorsys
-import math
 
 from amazing.game.constants import MAZE_DIMENSION
+
+TEAM_HUES = [
+    0,
+    20,
+    50,
+    100,
+    170,
+    200,
+    240,
+    280,
+]
 
 
 def team_color(hue: int) -> tuple[int, int, int]:
@@ -12,7 +22,7 @@ def team_color(hue: int) -> tuple[int, int, int]:
     Returns:
         An RGB color tuple with values from 0 to 255.
     """
-    red, green, blue = colorsys.hsv_to_rgb(((hue * math.pi / 2) % 360) / 360, 1, 1)
+    red, green, blue = colorsys.hsv_to_rgb(hue / 360, 1, 1)
     return int(red * 255), int(green * 255), int(blue * 255)
 
 

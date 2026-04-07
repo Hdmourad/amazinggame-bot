@@ -5,7 +5,7 @@ from typing import Any
 
 import arcade
 
-from amazing.viewer.constants import constants, team_color
+from amazing.viewer.constants import TEAM_HUES, constants, team_color
 from amazing.viewer.utils import hue_changed_texture
 
 POSITION_TRACE_DURATION = 10.0  # seconds of history to display
@@ -57,7 +57,7 @@ class Player:
             self.position_history.clear()
         if self.id is None:
             self.id = int(state["id"])
-            self.hue = self.id * 180 // nb_players
+            self.hue = TEAM_HUES[self.id % len(TEAM_HUES)]
             self.color = team_color(self.hue)
             self.sprite.texture = hue_changed_texture(
                 str(files("amazing.viewer.resources.images").joinpath("car.png")),

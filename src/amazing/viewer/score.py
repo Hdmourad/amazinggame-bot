@@ -5,7 +5,7 @@ from importlib.resources import files
 import arcade
 
 from amazing.game.constants import MAX_EXPLORATION_DURATION_SECONDS
-from amazing.viewer.constants import constants, team_color
+from amazing.viewer.constants import TEAM_HUES, constants, team_color
 
 
 @lru_cache(maxsize=32)
@@ -135,9 +135,7 @@ class Score:
             self.teams_data.append(
                 TeamData(
                     name=player_data["name"],
-                    color=team_color(
-                        player_data["id"] * 180 // len(server_data["players"])
-                    ),
+                    color=team_color(TEAM_HUES[player_data["id"] % len(TEAM_HUES)]),
                     blocked=player_data["blocked"],
                     score=player_data["score"],
                 )
