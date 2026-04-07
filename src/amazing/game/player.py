@@ -136,7 +136,22 @@ class Player:
         orientation_radians = math.radians(-self._orientation)
         delta_x = math.cos(orientation_radians) * self._speed * delta_time
         delta_y = math.sin(orientation_radians) * self._speed * delta_time
+        prev_position = self.position
         self.position = (self.position[0] + delta_x, self.position[1] + delta_y)
+
+        prev_cx, prev_cy = int(prev_position[0]), int(prev_position[1])
+        new_cx, new_cy = int(self.position[0]), int(self.position[1])
+        if (new_cx, new_cy) != (prev_cx, prev_cy) and self.game.maze is not None:
+            maze = self.game.maze
+            hit_wall = False
+            if new_cx != prev_cx:
+                hit_wall = hit_wall or maze.walls[max(new_cx, prev_cx)][prev_cy].left
+            if new_cy != prev_cy:
+                hit_wall = hit_wall or maze.walls[prev_cx][max(new_cy, prev_cy)].top
+            if hit_wall:
+                self.position = prev_position
+                self.blocked_counter = MAX_BLOCKED_COUNTER + 1
+
         self.visited_cells.add((int(self.position[0]), int(self.position[1])))
         if not self.finished:
             self.race_time = max(

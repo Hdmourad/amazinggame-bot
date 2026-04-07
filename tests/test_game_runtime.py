@@ -239,3 +239,37 @@ def test_player_sensors_pass_through_open_walls() -> None:
     assert right == pytest.approx(1.5)  # +y: passes open horizontal wall
     assert rear == pytest.approx(0.5)  # west: left perimeter immediately
     assert left == pytest.approx(0.5)  # -y: top perimeter immediately
+
+
+def test_player_update_crosses_open_wall_unhindered() -> None:
+    """Player moving into a new cell through an open wall should not be blocked."""
+    game = Game()
+    game.maze = Maze(2, 2)
+    game.maze.walls[1][0].left = False  # open the vertical wall between (0,0) and (1,0)
+    player = Player("alice", game)
+    player.position = (0.9, 0.5)
+    player._speed = 1.0  # noqa: SLF001
+    player._orientation = 0  # facing east (positive x)  # noqa: SLF001
+
+    player.update(0.2)  # should advance x by 0.2, crossing into cell (1,0)
+
+    x_pos, _ = player.position
+    assert x_pos > 1.0
+    assert not player.blocked
+
+
+def test_player_update_blocked_by_wall_on_cell_crossing() -> None:
+    """Player hitting a wall when crossing into a new cell should be blocked and
+    reverted."""
+    game = Game()
+    game.maze = Maze(2, 2)
+    # walls[1][0].left is True by default: wall between (0,0) and (1,0)
+    player = Player("alice", game)
+    player.position = (0.9, 0.5)
+    player._speed = 1.0  # noqa: SLF001
+    player._orientation = 0  # facing east  # noqa: SLF001
+
+    player.update(0.2)  # would cross into (1,0) but there is a wall
+
+    assert player.blocked
+    assert player.position == pytest.approx((0.9, 0.5))
