@@ -4,6 +4,7 @@ from importlib.resources import files
 
 import arcade
 
+from amazing.game.constants import MAX_EXPLORATION_DURATION_SECONDS
 from amazing.viewer.constants import constants, team_color
 
 
@@ -124,7 +125,10 @@ class Score:
                 )
 
     def update(self, server_data: dict) -> None:
-        self.time = server_data["time"]
+        if server_data["time"] < MAX_EXPLORATION_DURATION_SECONDS:
+            self.time = MAX_EXPLORATION_DURATION_SECONDS - server_data["time"]
+        else:
+            self.time = server_data["time"] - MAX_EXPLORATION_DURATION_SECONDS
         self.teams_data.clear()
         for player_data in server_data["players"]:
             self.teams_data.append(
