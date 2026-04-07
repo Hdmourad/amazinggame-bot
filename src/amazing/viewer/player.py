@@ -7,6 +7,7 @@ from typing import Any
 import arcade
 
 from amazing.viewer.constants import TEAM_HUES, constants, team_color
+from amazing.viewer.fireworks import Firework
 from amazing.viewer.utils import hue_changed_texture
 
 POSITION_TRACE_DURATION = 10.0  # seconds of history to display
@@ -34,6 +35,7 @@ class Player:
         self.color: tuple[int, int, int] = (255, 255, 255)
         self.exploring = True
         self.blocked = False
+        self.explosion: Firework | None = None
 
     def dot_color(self) -> tuple[int, int, int, int]:
         """Return the RGBA color for the position trace dots."""
@@ -53,12 +55,15 @@ class Player:
             current_time: Current server time in seconds.
             exploration: Whether the game is in the exploration phase.
         """
+        if self.explosion is not None and self.explosion.finished:
+            self.explosion = None
         if exploration != self.exploring:
             self.exploring = exploration
             self.shape_list.clear()
             self.position_history.clear()
         if self.blocked != state["blocked"] and state["blocked"]:
             logger.info("Player %s is now blocked after invalid commands.", self.id)
+            self.explosion = Firework((self.sprite.center_x, self.sprite.center_y))
         self.blocked = state["blocked"]
         if self.id is None:
             self.id = int(state["id"])
@@ -96,3 +101,8 @@ class Player:
     def draw_trace(self) -> None:
         """Draw the shape list containing trace circles."""
         self.shape_list.draw()
+
+    def draw_explosion(self) -> None:
+        """Draw the explosion animation."""
+        if self.explosion is not None:
+            self.explosion.render()

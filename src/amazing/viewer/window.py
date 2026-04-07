@@ -87,7 +87,7 @@ class Window(arcade.Window):
                     date_server,
                     exploration=data["exploration"],
                 )
-            logger.info("Received state update with players: %s", data["players"])
+            # logger.info("Received state update with players: %s", data["players"]) # noqa: ERA001
 
         self.clear()
         self.background_sprites.draw()
@@ -97,6 +97,10 @@ class Window(arcade.Window):
         self.dot_list.draw()
         self.players_sprite_list.draw()
         self.score.draw()
+
+        self.ctx.enable_only(self.ctx.BLEND)
+        for player in self.players.values():
+            player.draw_explosion()
 
 
 def gui_thread(addr: str, port: int) -> None:
