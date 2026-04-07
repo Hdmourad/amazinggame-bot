@@ -46,9 +46,9 @@ class StubPlayer:
 
 def test_game_constants_are_stable() -> None:
     """Game constants should keep their published values."""
-    assert MAX_EXPLORATION_DURATION_SECONDS == 30
+    assert MAX_EXPLORATION_DURATION_SECONDS == 180
     assert MAX_RACE_DURATION_SECONDS == 60
-    assert MAX_NB_PLAYERS == 20
+    assert MAX_NB_PLAYERS == 8
     assert MAX_BLOCKED_COUNTER == 3
 
 
