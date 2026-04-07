@@ -53,7 +53,6 @@ class Player:
         self.name = name
         self.blocked_counter = 0
         self.game = game
-        self.score = 0
         self._speed = 0.0
         self._orientation = 0
         self.position = (0.5, 0.5)
@@ -63,7 +62,6 @@ class Player:
     def reset(self) -> None:
         """Reset player state for the start of a race."""
         self.blocked_counter = 0
-        self.score = 0
         self._speed = 0.0
         self._orientation = 0
         self.position = (0.5, 0.5)
@@ -72,6 +70,16 @@ class Player:
     def blocked(self) -> bool:
         """Return whether the player is blocked after repeated invalid commands."""
         return self.blocked_counter > MAX_BLOCKED_COUNTER
+
+    @property
+    def score(self) -> int:
+        """Return the player's score based on visited cells."""
+        return self.nb_visited_cells
+
+    @property
+    def nb_visited_cells(self) -> int:
+        """Return the number of visited cells."""
+        return len(self.visited_cells)
 
     def manage_command(self, command_str: str) -> str:
         """Validate and dispatch a player command.
@@ -241,7 +249,7 @@ class Player:
             "name": self.name,
             "blocked": self.blocked,
             "score": self.score,
-            "nb_visited_cells": len(self.visited_cells),
+            "nb_visited_cells": self.nb_visited_cells,
             "speed": self._speed,
             "orientation": self._orientation,
             "position": self.position,
