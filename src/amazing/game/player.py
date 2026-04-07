@@ -4,7 +4,11 @@ import logging
 import math
 from typing import TYPE_CHECKING, NoReturn, TypedDict
 
-from amazing.game.constants import MAX_BLOCKED_COUNTER, MAX_EXPLORATION_DURATION_SECONDS
+from amazing.game.constants import (
+    MAX_BLOCKED_COUNTER,
+    MAX_EXPLORATION_DURATION_SECONDS,
+    MAX_RACE_DURATION_SECONDS,
+)
 
 if TYPE_CHECKING:
     from amazing.game.game import Game
@@ -79,9 +83,16 @@ class Player:
         race_score = 0
         if self.race_time and self.game:
             race_score = int(
-                20 * max(self.game.maze.width, self.game.maze.height) / self.race_time
+                self.game.maze.width
+                * self.game.maze.height
+                * (MAX_RACE_DURATION_SECONDS - self.race_time)
+                / MAX_RACE_DURATION_SECONDS
             )
-        return self.nb_visited_cells + race_score
+        return (
+            self.nb_visited_cells
+            + race_score
+            + 10 * int(self.finished and not self.game.exploration_phase)
+        )
 
     @property
     def nb_visited_cells(self) -> int:
