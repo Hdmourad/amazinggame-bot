@@ -15,7 +15,7 @@ POSITION_TRACE_PERIOD = 0.2  # seconds between recorded positions
 class Player:
     """Renderable player sprite built from server state."""
 
-    def __init__(self) -> None:
+    def __init__(self, dot_list: arcade.shape_list.ShapeElementList) -> None:
         """Initialize a player sprite from a texture."""
         self.sprite = arcade.Sprite()
         self.sprite.texture = hue_changed_texture(
@@ -25,7 +25,7 @@ class Player:
         self.sprite.width = 0.8 * constants.CELL_WIDTH
         self.sprite.height = 0.4 * constants.CELL_HEIGHT
         self.position_history: list[tuple[float, float, float]] = []  # (time, x, y)
-        self.shape_list = arcade.shape_list.ShapeElementList()
+        self.shape_list = dot_list
         self.id: int | None = None
         self.hue = 0
         self.color: tuple[int, int, int] = (255, 255, 255)
@@ -33,7 +33,7 @@ class Player:
 
     def dot_color(self) -> tuple[int, int, int, int]:
         """Return the RGBA color for the position trace dots."""
-        return (*self.color, 100)
+        return (*self.color, 20)
 
     def update_from_state(
         self,

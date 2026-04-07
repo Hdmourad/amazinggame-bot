@@ -35,6 +35,7 @@ class Window(arcade.Window):
         self.players: dict[int, Player] = {}
         self.players_sprite_list = arcade.SpriteList()
         self.score = Score(addr, port)
+        self.dot_list = arcade.shape_list.ShapeElementList()
 
     def setup(self) -> None:
         """Build the tiled background sprite list once at startup."""
@@ -78,7 +79,7 @@ class Window(arcade.Window):
 
             for player_id, state in enumerate(data["players"]):
                 if player_id not in self.players:
-                    self.players[player_id] = Player()
+                    self.players[player_id] = Player(self.dot_list)
                     self.players_sprite_list.append(self.players[player_id].sprite)
 
                 self.players[player_id].update_from_state(
@@ -93,6 +94,7 @@ class Window(arcade.Window):
         self.maze.draw()
         for player in self.players.values():
             player.draw_trace()
+        self.dot_list.draw()
         self.players_sprite_list.draw()
         self.score.draw()
 
