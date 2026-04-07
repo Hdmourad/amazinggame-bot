@@ -107,6 +107,7 @@ def test_game_update_manage_command_and_state(monkeypatch: pytest.MonkeyPatch) -
     assert game.last_update_time == pytest.approx(1.25)
     assert game.state() == {
         "time": pytest.approx(0.25),
+        "exploration": True,
         "players": [
             {
                 "name": "stub",

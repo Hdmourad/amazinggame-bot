@@ -29,6 +29,7 @@ class Player:
         self.id: int | None = None
         self.hue = 0
         self.color: tuple[int, int, int] = (255, 255, 255)
+        self.exploring = True
 
     def dot_color(self) -> tuple[int, int, int, int]:
         """Return the RGBA color for the position trace dots."""
@@ -39,6 +40,8 @@ class Player:
         state: dict[str, Any],
         current_time: float,
         nb_players: int,
+        *,
+        exploration: bool,
     ) -> None:
         """Apply server-side player state to the render sprite.
 
@@ -46,7 +49,12 @@ class Player:
             state: Player state dict from server.
             current_time: Current server time in seconds.
             nb_players: Total number of players in the game.
+            exploration: Whether the game is in the exploration phase.
         """
+        if exploration != self.exploring:
+            self.exploring = exploration
+            self.shape_list.clear()
+            self.position_history.clear()
         if self.id is None:
             self.id = int(state["id"])
             self.hue = self.id * 180 // nb_players
@@ -71,19 +79,9 @@ class Player:
             or current_time - self.position_history[-1][0] >= POSITION_TRACE_PERIOD
         ):
             self.position_history.append((current_time, screen_x, screen_y))
-
-        # Prune history older than POSITION_TRACE_DURATION
-        cutoff_time = current_time - POSITION_TRACE_DURATION
-        self.position_history = [
-            (t, x, y) for t, x, y in self.position_history if t >= cutoff_time
-        ]
-
-        # Rebuild shape list with circles
-        self.shape_list.clear()
-        for _time, x, y in self.position_history:
             circle = arcade.shape_list.create_ellipse_filled(
-                int(x),
-                int(y),
+                int(screen_x),
+                int(screen_y),
                 constants.DOT_RADIUS,
                 constants.DOT_RADIUS,
                 self.dot_color(),
