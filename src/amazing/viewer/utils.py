@@ -37,6 +37,9 @@ def hue(image_path: str) -> int:
 @cache
 def hue_changed_texture(image_path: str, target_hue: int) -> arcade.Texture:
     logging.info("Managing %s", image_path)
+
+    target_hue = target_hue * 256 // 360
+
     original_image = Image.open(image_path)
     original_hue = hue(image_path)
     offset_hue = 256 + target_hue - original_hue
