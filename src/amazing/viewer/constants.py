@@ -50,6 +50,7 @@ class Constants:
         self.MAP_HEIGHT = self.MAP_MAX_Y - self.MAP_MIN_Y
         self.CELL_WIDTH = self.MAP_WIDTH / MAZE_DIMENSION
         self.CELL_HEIGHT = self.MAP_HEIGHT / MAZE_DIMENSION
+        self.DOT_RADIUS = int(min(self.CELL_WIDTH, self.CELL_HEIGHT) * 0.15)
 
 
 constants: Constants = Constants()

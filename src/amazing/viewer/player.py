@@ -9,7 +9,6 @@ from amazing.viewer.constants import constants
 
 POSITION_TRACE_DURATION = 10.0  # seconds of history to display
 POSITION_TRACE_PERIOD = 0.1  # seconds between recorded positions
-DOT_RADIUS = 6  # pixels
 DOT_COLOR = (200, 200, 200, 200)  # light gray with transparency
 
 
@@ -70,8 +69,8 @@ class Player:
             circle = arcade.shape_list.create_ellipse_filled(
                 int(x),
                 int(y),
-                DOT_RADIUS,
-                DOT_RADIUS,
+                constants.DOT_RADIUS,
+                constants.DOT_RADIUS,
                 DOT_COLOR,
             )
             self.shape_list.append(circle)
