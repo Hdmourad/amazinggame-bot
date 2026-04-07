@@ -1,5 +1,6 @@
 """Player rendering helpers for the Arcade viewer."""
 
+import logging
 from importlib.resources import files
 from typing import Any
 
@@ -10,6 +11,8 @@ from amazing.viewer.utils import hue_changed_texture
 
 POSITION_TRACE_DURATION = 10.0  # seconds of history to display
 POSITION_TRACE_PERIOD = 0.2  # seconds between recorded positions
+
+logger = logging.getLogger(__name__)
 
 
 class Player:
@@ -30,6 +33,7 @@ class Player:
         self.hue = 0
         self.color: tuple[int, int, int] = (255, 255, 255)
         self.exploring = True
+        self.blocked = False
 
     def dot_color(self) -> tuple[int, int, int, int]:
         """Return the RGBA color for the position trace dots."""
@@ -53,6 +57,9 @@ class Player:
             self.exploring = exploration
             self.shape_list.clear()
             self.position_history.clear()
+        if self.blocked != state["blocked"] and state["blocked"]:
+            logger.info("Player %s is now blocked after invalid commands.", self.id)
+        self.blocked = state["blocked"]
         if self.id is None:
             self.id = int(state["id"])
             self.hue = TEAM_HUES[self.id % len(TEAM_HUES)]
