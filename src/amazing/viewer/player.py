@@ -39,7 +39,6 @@ class Player:
         self,
         state: dict[str, Any],
         current_time: float,
-        nb_players: int,
         *,
         exploration: bool,
     ) -> None:
@@ -48,7 +47,6 @@ class Player:
         Args:
             state: Player state dict from server.
             current_time: Current server time in seconds.
-            nb_players: Total number of players in the game.
             exploration: Whether the game is in the exploration phase.
         """
         if exploration != self.exploring:
