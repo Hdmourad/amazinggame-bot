@@ -7,7 +7,12 @@ from time import perf_counter
 from typing import TYPE_CHECKING, TypedDict
 
 from amazing.game import Maze, generate_maze
-from amazing.game.constants import MAX_NB_PLAYERS, MAZE_DIMENSION
+from amazing.game.constants import (
+    MAX_EXPLORATION_DURATION_SECONDS,
+    MAX_NB_PLAYERS,
+    MAX_RACE_DURATION_SECONDS,
+    MAZE_DIMENSION,
+)
 from amazing.game.player import Player, PlayerState
 
 if TYPE_CHECKING:
@@ -40,10 +45,13 @@ class Game:
     @property
     def finished(self) -> bool:
         """Return whether the game has a winner."""
-        return any(
-            int(player.position[0]) == MAZE_DIMENSION - 1
-            and int(player.position[1]) == MAZE_DIMENSION - 1
-            for player in self.players
+        return (
+            (
+                all(player.finished for player in self.players)
+                and not self.exploration_phase
+            )
+            or self.cumulated_time
+            >= MAX_EXPLORATION_DURATION_SECONDS + MAX_RACE_DURATION_SECONDS
         )
 
     def start(self) -> None:

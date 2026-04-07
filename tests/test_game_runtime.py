@@ -183,6 +183,7 @@ def test_player_blocked_update_and_state() -> None:
         "speed": pytest.approx(0.1),
         "orientation": 350,
         "position": (0.5, 0.5),
+        "finished": False,
     }
 
 
