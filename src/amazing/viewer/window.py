@@ -11,6 +11,7 @@ from amazing.viewer.animation import set_date
 from amazing.viewer.constants import constants
 from amazing.viewer.maze import Maze
 from amazing.viewer.player import Player
+from amazing.viewer.score import Score
 
 input_queue: Queue = Queue()
 logger = logging.getLogger(__name__)
@@ -19,7 +20,7 @@ logger = logging.getLogger(__name__)
 class Window(arcade.Window):
     """Main Arcade window for rendering the maze viewer."""
 
-    def __init__(self, _addr: str, _port: int) -> None:
+    def __init__(self, addr: str, port: int) -> None:
         """Initialize the window and background assets."""
         super().__init__(
             constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT, constants.SCREEN_TITLE
@@ -33,9 +34,11 @@ class Window(arcade.Window):
         self._maze_loaded_from_server = False
         self.players: dict[int, Player] = {}
         self.players_sprite_list = arcade.SpriteList()
+        self.score = Score(addr, port)
 
     def setup(self) -> None:
         """Build the tiled background sprite list once at startup."""
+        self.score.setup()
         base_texture = self.background_texture.texture
         tile_width = int(self.background_texture.width)
         tile_height = int(self.background_texture.height)
@@ -66,6 +69,7 @@ class Window(arcade.Window):
             data = input_queue.get()
             date_server = data["time"]
             set_date(date_server)
+            self.score.update(data)
 
             if not self._maze_loaded_from_server and data.get("maze") is not None:
                 self.maze.maze = GameMaze.deserialize(data["maze"])
@@ -86,6 +90,7 @@ class Window(arcade.Window):
         for player in self.players.values():
             player.draw_trace()
         self.players_sprite_list.draw()
+        self.score.draw()
 
 
 def gui_thread(addr: str, port: int) -> None:
