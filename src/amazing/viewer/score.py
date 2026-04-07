@@ -88,16 +88,15 @@ class Score:
         draw_text(
             f"{self.addr} : {self.port}",
             constants.SCORE_MARGIN,
-            constants.SCORE_HEIGHT
-            - constants.SCORE_TIME_MARGIN
-            - constants.SCORE_TEAM_SIZE // 4,
+            constants.SCORE_HEIGHT - int(constants.SCORE_TIME_MARGIN * 1.5),
             (255, 255, 255),
             size=constants.SCORE_FONT_SIZE - 4,
         )
         for index, team_data in enumerate(
             sorted(self.teams_data, key=lambda td: td.score)
         ):
-            team_offset = constants.SCORE_TEAM_SIZE + index * constants.SCORE_TEAM_SIZE
+            team_size = constants.SCORE_HEIGHT // (len(self.teams_data) + 2)
+            team_offset = team_size + index * team_size
 
             draw_text(
                 team_data.name[:18],
@@ -110,7 +109,7 @@ class Score:
                 draw_text(
                     "BLOCKED",
                     constants.SCORE_MARGIN,
-                    team_offset - constants.SCORE_TEAM_SIZE // 4,
+                    team_offset - team_size // 4,
                     team_data.color,
                     size=constants.SCORE_FONT_SIZE - 5,
                 )
@@ -119,7 +118,7 @@ class Score:
                 draw_text(
                     f"Score: {score}",
                     constants.SCORE_MARGIN,
-                    team_offset - constants.SCORE_TEAM_SIZE // 4,
+                    team_offset - team_size // 4,
                     team_data.color,
                     size=constants.SCORE_FONT_SIZE - 5,
                 )
