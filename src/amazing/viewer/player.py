@@ -55,7 +55,7 @@ class Player:
             current_time: Current server time in seconds.
             exploration: Whether the game is in the exploration phase.
         """
-        if self.explosion is not None and self.explosion.finished:
+        if self.explosion is not None and self.explosion.finished():
             self.explosion = None
         if exploration != self.exploring:
             self.exploring = exploration

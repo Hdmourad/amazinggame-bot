@@ -7,7 +7,7 @@ from arcade.experimental.shadertoy import Shadertoy
 import amazing.viewer.resources
 from amazing.viewer.constants import constants
 
-ANIMATION_DURATION = 0.9  # seconds
+ANIMATION_DURATION_SECONDS = 1.0
 
 
 class Firework:
@@ -20,10 +20,11 @@ class Firework:
         )
         # uniform vec2 explosionPos;
         self.shadertoy.program["explosionPos"] = position
+        self.shadertoy.program["explosionDurationSeconds"] = ANIMATION_DURATION_SECONDS
         self.start_time = perf_counter()
 
     def render(self):
         self.shadertoy.render(time=perf_counter() - self.start_time)
 
     def finished(self):
-        return perf_counter() - self.start_time > ANIMATION_DURATION
+        return perf_counter() - self.start_time > ANIMATION_DURATION_SECONDS

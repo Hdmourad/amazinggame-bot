@@ -1,6 +1,7 @@
 // based on https://github.com/pythonarcade/asteroids/blob/main/source/explosion.glsl
 
 uniform vec2 explosionPos;
+uniform float explosionDurationSeconds;
 
 const float TWOPI = 6.2832;
 const float PARTICLE_COUNT = 125.0;
@@ -12,7 +13,7 @@ vec2 Hash12_Polar(float t) {
   float angle = fract(sin(t * 674.3) * 453.2) * TWOPI;
   float distance = fract(sin((t + angle) * 724.3) * 341.2);
 
-  return vec2(sin(angle), cos(angle)) * distance / 2.0;
+  return vec2(sin(angle), cos(angle)) * distance / 1.0;
 }
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
@@ -26,13 +27,13 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     float col = 0.;
     vec3 baseColor = vec3(1., 0., 0.);
 
-    float t = fract(iTime);
+    float t = clamp(iTime / explosionDurationSeconds, 0.0, 1.0);
 
     for (float i= 0.; i < PARTICLE_COUNT; i++) {
         vec2 dir = Hash12_Polar(i + 1.0);
 
         float d = length(uv - dir * t);
-        float brightness = mix(.0005, .002, smoothstep(.1, 0., t));
+        float brightness = mix(.0005, .002, 1.0 - smoothstep(0.0, 0.9, t));
 
         brightness *= sin(t * 20. + i) * .5 + .5;
         col += brightness/d;
