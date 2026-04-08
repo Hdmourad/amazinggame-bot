@@ -130,6 +130,10 @@ class Player:
 
     def update(self, delta_time: float) -> None:
         """Update runtime player state for one frame."""
+        if not self.finished:
+            self.race_time = max(
+                0, self.game.cumulated_time - MAX_EXPLORATION_DURATION_SECONDS
+            )
         if self.blocked:
             return
 
@@ -164,10 +168,6 @@ class Player:
             math.floor(self.position[0]),
             math.floor(self.position[1]),
         ))
-        if not self.finished:
-            self.race_time = max(
-                0, self.game.cumulated_time - MAX_EXPLORATION_DURATION_SECONDS
-            )
         if (
             self.game.maze is not None
             and math.floor(self.position[0]) == self.game.maze.width - 1
