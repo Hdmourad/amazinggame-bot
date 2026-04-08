@@ -154,6 +154,6 @@ class Score:
                     nb_visited_cells=player_data["nb_visited_cells"],
                     race_time=player_data["race_time"]
                     if player_data["finished"]
-                    else 0.0,
+                    else int(player_data["race_time"]),
                 )
             )
