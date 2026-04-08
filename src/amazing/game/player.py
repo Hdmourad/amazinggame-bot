@@ -32,7 +32,7 @@ class PlayerState(TypedDict):
     name: str
     blocked: bool
     nb_visited_cells: int
-    score: int
+    score: float
     speed: float
     orientation: int
     position: tuple[float, float]
@@ -78,11 +78,11 @@ class Player:
         return self.blocked_counter > MAX_BLOCKED_COUNTER
 
     @property
-    def score(self) -> int:
+    def score(self) -> float:
         """Return the player's score based on visited cells."""
-        race_score = 0
+        race_score = 0.0
         if self.race_time and self.game:
-            race_score = int(
+            race_score = (
                 self.game.maze.width
                 * self.game.maze.height
                 * (MAX_RACE_DURATION_SECONDS - self.race_time)

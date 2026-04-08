@@ -50,7 +50,7 @@ class TeamData:
     name: str
     color: tuple[int, int, int]
     blocked: bool
-    score: int
+    score: float
     nb_visited_cells: int
     race_time: float = 0.0
 
@@ -127,9 +127,8 @@ class Score:
                     size=constants.SCORE_FONT_SIZE - 5,
                 )
             else:
-                score = f"{team_data.score:_d}".replace("_", " ")
                 draw_text(
-                    f"Score: {score}",
+                    f"Score: {team_data.score:.2f}",
                     constants.SCORE_MARGIN,
                     team_offset - team_size // 4,
                     team_data.color,
@@ -156,7 +155,9 @@ class Score:
                     name=player_data["name"],
                     color=team_color(TEAM_HUES[player_data["id"] % len(TEAM_HUES)]),
                     blocked=player_data["blocked"],
-                    score=player_data["score"],
+                    score=(player_data["score"])
+                    if (server_data["finished"] or player_data["finished"])
+                    else int(player_data["score"]),
                     nb_visited_cells=player_data["nb_visited_cells"],
                     race_time=player_data["race_time"]
                     if player_data["finished"]

@@ -28,6 +28,7 @@ class GameState(TypedDict):
     players: list[PlayerState]
     exploration: bool
     maze: MazeState | None
+    finished: bool
 
 
 class Game:
@@ -110,6 +111,7 @@ class Game:
         players: list[PlayerState] = [player.state() for player in self.players]
         data: GameState = {
             "time": self.cumulated_time,
+            "finished": self.finished,
             "players": players,
             "exploration": self.exploration_phase,
             "maze": self.maze.serialize() if self.maze is not None else None,
