@@ -4,9 +4,9 @@ import logging
 from threading import Thread
 from time import sleep
 
-from amazing.network.client import Client
-from amazing.network.data_handler import NetworkError
-from amazing.viewer.window import gui_thread, input_queue
+from amazinggame.network.client import Client
+from amazinggame.network.data_handler import NetworkError
+from amazinggame.viewer.window import gui_thread, input_queue
 
 logger = logging.getLogger(__name__)
 

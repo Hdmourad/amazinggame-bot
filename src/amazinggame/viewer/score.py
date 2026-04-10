@@ -4,8 +4,8 @@ from importlib.resources import files
 
 import arcade
 
-from amazing.game.constants import MAX_EXPLORATION_DURATION_SECONDS
-from amazing.viewer.constants import TEAM_HUES, constants, team_color
+from amazinggame.game.constants import MAX_EXPLORATION_DURATION_SECONDS
+from amazinggame.viewer.constants import TEAM_HUES, constants, team_color
 
 
 @lru_cache(maxsize=128)
@@ -64,7 +64,7 @@ class Score:
         self.shape_list = arcade.shape_list.ShapeElementList()
 
     def setup(self) -> None:
-        font_file = files("amazing.viewer.resources.fonts").joinpath(
+        font_file = files("amazinggame.viewer.resources.fonts").joinpath(
             "FiraCode-Bold.ttf"
         )
 

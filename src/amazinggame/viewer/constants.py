@@ -2,7 +2,7 @@
 
 import colorsys
 
-from amazing.game.constants import MAZE_DIMENSION
+from amazinggame.game.constants import MAZE_DIMENSION
 
 TEAM_HUES = [
     0,
@@ -29,7 +29,7 @@ def team_color(hue: int) -> tuple[int, int, int]:
 class Constants:
     """Container for viewer layout and color constants."""
 
-    SCREEN_TITLE = "Amazing Viewer"
+    SCREEN_TITLE = "Amazing Game Viewer"
 
     def resize(self, *, small_window: bool) -> None:
         """Apply either normal or small-window screen layout values."""

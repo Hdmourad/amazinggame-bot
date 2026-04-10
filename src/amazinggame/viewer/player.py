@@ -6,9 +6,9 @@ from typing import Any
 
 import arcade
 
-from amazing.viewer.constants import TEAM_HUES, constants, team_color
-from amazing.viewer.fireworks import Firework
-from amazing.viewer.utils import hue_changed_texture
+from amazinggame.viewer.constants import TEAM_HUES, constants, team_color
+from amazinggame.viewer.fireworks import Firework
+from amazinggame.viewer.utils import hue_changed_texture
 
 POSITION_TRACE_DURATION = 10.0  # seconds of history to display
 POSITION_TRACE_PERIOD = 0.2  # seconds between recorded positions
@@ -23,7 +23,7 @@ class Player:
         """Initialize a player sprite from a texture."""
         self.sprite = arcade.Sprite()
         self.sprite.texture = hue_changed_texture(
-            str(files("amazing.viewer.resources.images").joinpath("car.png")),
+            str(files("amazinggame.viewer.resources.images").joinpath("car.png")),
             target_hue=50,
         )
         self.sprite.width = 0.8 * constants.CELL_WIDTH
@@ -70,7 +70,7 @@ class Player:
             self.hue = TEAM_HUES[self.id % len(TEAM_HUES)]
             self.color = team_color(self.hue)
             self.sprite.texture = hue_changed_texture(
-                str(files("amazing.viewer.resources.images").joinpath("car.png")),
+                str(files("amazinggame.viewer.resources.images").joinpath("car.png")),
                 target_hue=self.hue,
             )
         position = state.get("position", (0.5, 0.5))

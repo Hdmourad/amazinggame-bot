@@ -1,0 +1,1 @@
+"""Amazinggame package."""

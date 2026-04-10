@@ -6,12 +6,12 @@ from queue import Queue
 
 import arcade
 
-from amazing.game.maze import Maze as GameMaze
-from amazing.viewer.animation import set_date
-from amazing.viewer.constants import constants
-from amazing.viewer.maze import Maze
-from amazing.viewer.player import Player
-from amazing.viewer.score import Score
+from amazinggame.game.maze import Maze as GameMaze
+from amazinggame.viewer.animation import set_date
+from amazinggame.viewer.constants import constants
+from amazinggame.viewer.maze import Maze
+from amazinggame.viewer.player import Player
+from amazinggame.viewer.score import Score
 
 input_queue: Queue = Queue()
 logger = logging.getLogger(__name__)
@@ -27,7 +27,7 @@ class Window(arcade.Window):
         )
         arcade.set_background_color(arcade.csscolor.BLACK)
         self.background_texture = arcade.Sprite(
-            str(files("amazing.viewer.resources.images").joinpath("concrete.jpg"))
+            str(files("amazinggame.viewer.resources.images").joinpath("concrete.jpg"))
         )
         self.background_sprites = arcade.SpriteList()
         self.maze = Maze()

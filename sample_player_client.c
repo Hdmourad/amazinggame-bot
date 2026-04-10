@@ -1,7 +1,7 @@
 /*
  * sample_player_client.c
  *
- * A minimal Amazing player that connects to the game server and turns forever.
+ * A minimal Amazinggame player that connects to the game server and turns forever.
  *
  * Usage:  ./sample_player_client [host [port [name]]]
  *         defaults: host=127.0.0.1  port=16210  name=turner

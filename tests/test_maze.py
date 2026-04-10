@@ -2,8 +2,8 @@
 
 import pytest
 
-from amazing.game.cell import Cell
-from amazing.game.maze import CellCoord, Maze, Path
+from amazinggame.game.cell import Cell
+from amazinggame.game.maze import CellCoord, Maze, Path
 
 
 def test_maze_initialization_sets_width_and_height() -> None:

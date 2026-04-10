@@ -4,9 +4,9 @@ from importlib.resources import files
 
 import arcade
 
-from amazing.game.constants import MAZE_DIMENSION
-from amazing.game.generator import Maze as MazeData
-from amazing.viewer.constants import constants
+from amazinggame.game.constants import MAZE_DIMENSION
+from amazinggame.game.generator import Maze as MazeData
+from amazinggame.viewer.constants import constants
 
 
 class Maze:
@@ -16,7 +16,7 @@ class Maze:
         """Initialize maze data and rendering resources."""
         self.maze = MazeData(MAZE_DIMENSION, MAZE_DIMENSION)
         self.wall_texture = arcade.Sprite(
-            str(files("amazing.viewer.resources.images").joinpath("brick.png"))
+            str(files("amazinggame.viewer.resources.images").joinpath("brick.png"))
         )
         self.wall_sprites = arcade.SpriteList()
 

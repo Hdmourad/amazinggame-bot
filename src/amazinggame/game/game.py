@@ -6,17 +6,17 @@ import logging
 from time import perf_counter
 from typing import TYPE_CHECKING, TypedDict
 
-from amazing.game import Maze, generate_maze
-from amazing.game.constants import (
+from amazinggame.game import Maze, generate_maze
+from amazinggame.game.constants import (
     MAX_EXPLORATION_DURATION_SECONDS,
     MAX_NB_PLAYERS,
     MAX_RACE_DURATION_SECONDS,
     MAZE_DIMENSION,
 )
-from amazing.game.player import Player, PlayerState
+from amazinggame.game.player import Player, PlayerState
 
 if TYPE_CHECKING:
-    from amazing.game.maze import MazeState
+    from amazinggame.game.maze import MazeState
 
 logger = logging.getLogger(__name__)
 

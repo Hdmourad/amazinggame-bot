@@ -1,10 +1,10 @@
-"""CLI entrypoint for launching the Amazing viewer."""
+"""CLI entrypoint for launching the Amazinggame viewer."""
 
 import argparse
 import logging
 
-from amazing.viewer.constants import constants
-from amazing.viewer.viewer import Viewer
+from amazinggame.viewer.constants import constants
+from amazinggame.viewer.viewer import Viewer
 
 logger = logging.getLogger(__name__)
 

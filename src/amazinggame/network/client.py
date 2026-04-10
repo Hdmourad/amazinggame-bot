@@ -1,4 +1,4 @@
-"""TCP client for Amazing server communication."""
+"""TCP client for Amazinggame server communication."""
 
 import argparse
 from socket import AF_INET, SOCK_STREAM, socket

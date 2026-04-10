@@ -1,4 +1,4 @@
-"""Kill running Amazing-related Python processes."""
+"""Kill running Amazinggame-related Python processes."""
 
 from contextlib import suppress
 
@@ -13,9 +13,9 @@ for process in psutil.process_iter():
             continue
         print("testing", line)  # noqa: T201
         if (
-            "amazing." in line
+            "amazinggame." in line
             or ("sample_" in line and "_player" in line)
             or any(team in line for team in teams)
-        ) and ("amazing.killall" not in line):
+        ) and ("amazinggame.killall" not in line):
             print("    killing process:", line)  # noqa: T201
             process.kill()

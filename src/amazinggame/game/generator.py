@@ -3,7 +3,7 @@
 import random
 from typing import NamedTuple, cast
 
-from amazing.game.maze import Maze, Path
+from amazinggame.game.maze import Maze, Path
 
 
 class WallToRemove(NamedTuple):

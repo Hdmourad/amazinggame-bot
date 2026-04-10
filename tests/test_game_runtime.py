@@ -6,16 +6,16 @@ from typing import cast
 
 import pytest
 
-import amazing.game.game as game_module
-from amazing.game.constants import (
+import amazinggame.game.game as game_module
+from amazinggame.game.constants import (
     MAX_BLOCKED_COUNTER,
     MAX_EXPLORATION_DURATION_SECONDS,
     MAX_NB_PLAYERS,
     MAX_RACE_DURATION_SECONDS,
 )
-from amazing.game.game import Game
-from amazing.game.maze import Maze
-from amazing.game.player import BlockedPlayerError, Player
+from amazinggame.game.game import Game
+from amazinggame.game.maze import Maze
+from amazinggame.game.player import BlockedPlayerError, Player
 
 
 class StubPlayer:

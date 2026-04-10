@@ -2,15 +2,15 @@
 
 from typing import TYPE_CHECKING
 
-import amazing.game.generator as generator_module
-from amazing.game.generator import (
+import amazinggame.game.generator as generator_module
+from amazinggame.game.generator import (
     DisjointSet,
     WallToRemove,
     carve,
     generate_maze,
     main,
 )
-from amazing.game.maze import Maze
+from amazinggame.game.maze import Maze
 
 if TYPE_CHECKING:
     import pytest

@@ -4,14 +4,14 @@ import logging
 import math
 from typing import TYPE_CHECKING, NoReturn, TypedDict
 
-from amazing.game.constants import (
+from amazinggame.game.constants import (
     MAX_BLOCKED_COUNTER,
     MAX_EXPLORATION_DURATION_SECONDS,
     MAX_RACE_DURATION_SECONDS,
 )
 
 if TYPE_CHECKING:
-    from amazing.game.game import Game
+    from amazinggame.game.game import Game
 
 logger = logging.getLogger(__name__)
 

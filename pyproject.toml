@@ -1,5 +1,5 @@
 [project]
-name = "amazing"
+name = "amazinggame"
 version = "0.1.0"
 requires-python = ">=3.14"
 readme = "README.md"
@@ -11,7 +11,7 @@ dev-dependencies = ["pytest", "pytest-cov", "ruff", "ty"]
 package = true
 
 [project.scripts]
-maze-generator = "amazing.game.generator:main"
+maze-generator = "amazinggame.game.generator:main"
 
 [build-system]
 requires = ["setuptools", "setuptools-scm"]
@@ -22,10 +22,10 @@ exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:"]
 
 [tool.coverage.run]
 omit = [
-    "src/amazing/game/server.py",
-    "src/amazing/network/*",
-    "src/amazing/killall.py",
-    "src/amazing/viewer/*",
+    "src/amazinggame/game/server.py",
+    "src/amazinggame/network/*",
+    "src/amazinggame/killall.py",
+    "src/amazinggame/viewer/*",
 ]
 
 [tool.ruff]
@@ -68,5 +68,5 @@ indent-style = "space"
 python = "./.venv"
 
 [tool.pytest.ini_options]
-addopts = "-vvv --cov=amazing --cov-report term-missing --cov-report html --cov-branch --cov-config=pyproject.toml --full-trace --cov-fail-under=95"
+addopts = "-vvv --cov=amazinggame --cov-report term-missing --cov-report html --cov-branch --cov-config=pyproject.toml --full-trace --cov-fail-under=95"
 minversion = "8.0"

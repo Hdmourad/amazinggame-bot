@@ -4,8 +4,8 @@ from time import perf_counter
 
 from arcade.experimental.shadertoy import Shadertoy
 
-import amazing.viewer.resources
-from amazing.viewer.constants import constants
+import amazinggame.viewer.resources
+from amazinggame.viewer.constants import constants
 
 ANIMATION_DURATION_SECONDS = 1.5
 
@@ -15,7 +15,7 @@ class Firework:
         self.shadertoy = Shadertoy(
             (constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT),
             main_source=Path(
-                str(files(amazing.viewer.resources) / "firework.glsl")
+                str(files(amazinggame.viewer.resources) / "firework.glsl")
             ).read_text(encoding="utf-8"),
         )
         # uniform vec2 explosionPos;

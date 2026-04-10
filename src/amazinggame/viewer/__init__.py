@@ -1,0 +1,1 @@
+"""Viewer package for Amazinggame."""

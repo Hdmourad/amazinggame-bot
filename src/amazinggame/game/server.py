@@ -7,16 +7,16 @@ import logging
 import sys
 from time import perf_counter, sleep
 
-from amazing.game.constants import (
+from amazinggame.game.constants import (
     MAX_BLOCKED_COUNTER,
     MAX_EXPLORATION_DURATION_SECONDS,
     MAX_NB_PLAYERS,
     MAX_RACE_DURATION_SECONDS,
 )
-from amazing.game.game import Game
-from amazing.game.player import BlockedPlayerError
-from amazing.network.data_handler import NetworkError
-from amazing.network.server import ClientData, Server
+from amazinggame.game.game import Game
+from amazinggame.game.player import BlockedPlayerError
+from amazinggame.network.data_handler import NetworkError
+from amazinggame.network.server import ClientData, Server
 
 server_connection_timeout = 10
 FRAME_WINDOW_SECONDS = 0.033

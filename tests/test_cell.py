@@ -1,6 +1,6 @@
-"""Tests for amazing.game.cell module."""
+"""Tests for amazinggame.game.cell module."""
 
-from amazing.game.cell import Cell
+from amazinggame.game.cell import Cell
 
 
 def test_cell_initialization_sets_top_and_left_walls() -> None:
