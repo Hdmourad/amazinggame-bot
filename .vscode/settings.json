@@ -20,7 +20,7 @@
             "approve": true,
             "matchCommandLine": true
         },
-        "/^(cut|echo|grep|head|nl|printf|rg|set) /": {
+        "/^(awk|cat|cd|cut|diff|echo|grep|head|ls|nl|printf|python|rg|sed|set|sort|tail|tar|uniq|unzip) /": {
             "approve": true,
             "matchCommandLine": true
         }

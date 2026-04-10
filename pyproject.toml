@@ -6,6 +6,9 @@ readme = "README.md"
 authors = [{ name = "Vincent Poulailleau", email = "vpoulailleau@gmail.com" }]
 dependencies = ["arcade", "psutil"]
 
+[project.urls]
+Homepage = "https://github.com/vpoulailleau/amazing"
+
 [tool.uv]
 dev-dependencies = ["pytest", "pytest-cov", "ruff", "ty"]
 package = true
@@ -13,9 +16,19 @@ package = true
 [project.scripts]
 maze-generator = "amazinggame.game.generator:main"
 
+[tool.hatch.build.targets.wheel]
+packages = ["src/amazinggame"]
+
+[tool.hatch.build]
+ignore-vcs = true
+
+[tool.hatch.build.targets.sdist]
+only-include = ["src/amazinggame", "LICENSE", "README.md", "pyproject.toml"]
+exclude = [".gitignore"]
+
 [build-system]
-requires = ["setuptools", "setuptools-scm"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
 
 [tool.coverage.report]
 exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:"]
