@@ -12,9 +12,15 @@ uv run python -m amazing.viewer -p $PORT &
 sleep 2
 
 uv run python /home/vincent/Documents/programmation/amazing_player/sample_player_client.py -p $PORT -u "Flash" --winner &
+sleep 1
 uv run python /home/vincent/Documents/programmation/amazing_player/sample_player_client.py -p $PORT -u "KITT" &
 uv run python /home/vincent/Documents/programmation/amazing_player/sample_player_client.py -p $PORT -u "Optimus Prime" &
-sleep 1
+uv run python /home/vincent/Documents/programmation/amazing_player/sample_player_client.py -p $PORT -u "Toto" &
+uv run python /home/vincent/Documents/programmation/amazing_player/sample_player_client.py -p $PORT -u "Titi" &
+uv run python /home/vincent/Documents/programmation/amazing_player/sample_player_client.py -p $PORT -u "Tutu" &
+
+gcc -Wall -o sample_player_client sample_player_client.c
+./sample_player_client "localhost" $PORT "SamplePlayer" &
 
 sleep 330
 uv run python -m amazing.killall
