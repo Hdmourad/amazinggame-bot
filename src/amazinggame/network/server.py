@@ -1,5 +1,5 @@
 """TCP server for handling game client connections."""
-
+from __future__ import annotations
 import argparse
 import logging
 from contextlib import suppress
