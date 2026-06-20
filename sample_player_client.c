@@ -1,10 +1,10 @@
 /*
- * Bot Mourad Amazinggame - version finale améliorée
+ * Bot Mourad AmazingGame - version optimisée cours + compétition
  *
- * Compilation Windows :
- * gcc -Wall -o sample_player_client.exe sample_player_client.c -lws2_32 -lm
+ * Compile Windows :
+ * gcc -O2 -Wall -o sample_player_client.exe sample_player_client.c -lws2_32 -lm
  *
- * Lancement :
+ * Run :
  * .\sample_player_client.exe 127.0.0.1 16210 MouradBot
  */
 
@@ -49,10 +49,12 @@ typedef int sock_t;
 static int dxs[4] = {1, 0, -1, 0};
 static int dys[4] = {0, -1, 0, 1};
 
+/* Tableaux : accès O(1), adaptés à une grille fixe 15x15 */
 static int visited[GRID][GRID];
 static int blocked[GRID][GRID][4];
 static int known[GRID][GRID][4];
 
+/* Anti-blocage / virage verrouillé */
 static int turn_mode = 0;
 static int turn_steps = 0;
 static int last_turn = 0;
@@ -138,16 +140,13 @@ static double normalize_angle(double a)
 {
     while (a < 0) a += 360.0;
     while (a >= 360.0) a -= 360.0;
-
     return a;
 }
 
 static double angle_diff(double target, double current)
 {
     double diff = normalize_angle(target - current);
-
     if (diff > 180.0) diff -= 360.0;
-
     return diff;
 }
 
@@ -155,7 +154,6 @@ static double angle_to_cell(double x, double y, int tx, int ty)
 {
     double cx = tx + 0.5;
     double cy = ty + 0.5;
-
     return normalize_angle(-atan2(cy - y, cx - x) * 180.0 / M_PI);
 }
 
@@ -197,6 +195,10 @@ static int can_move_known(int x, int y, int d)
     return 1;
 }
 
+/*
+ * BFS avec FIFO par tableaux qx/qy.
+ * Complexité : O(V+E), très efficace sur 15x15.
+ */
 static int bfs(int sx, int sy, int gx, int gy, int* next_x, int* next_y)
 {
     int qx[GRID * GRID];
@@ -266,6 +268,10 @@ static int bfs(int sx, int sy, int gx, int gy, int* next_x, int* next_y)
     return 0;
 }
 
+/*
+ * Exploration intelligente :
+ * BFS vers la cellule non visitée connue la plus proche.
+ */
 static int bfs_nearest_unvisited(int sx, int sy, int* next_x, int* next_y)
 {
     int qx[GRID * GRID];
@@ -397,17 +403,19 @@ static const char* drive_to_cell(
     double target = angle_to_cell(x, y, tx, ty);
     double diff = angle_diff(target, orientation);
 
-    if (front < 0.85) {
-        if (speed > 0.05) return "DECELERATE";
+    if (front < 0.55 + speed * 1.20) {
+        if (speed > 0.08) return "DECELERATE";
         return start_turn(right, left);
     }
 
-    if (fabs(diff) > 16.0) {
-        if (speed > 0.12) return "DECELERATE";
+    if (fabs(diff) > 14.0) {
+        if (speed > 0.20) return "DECELERATE";
         return diff > 0 ? "TURN_LEFT" : "TURN_RIGHT";
     }
 
-    if (speed < max_speed) return "ACCELERATE";
+    if (front > 1.10 && speed < max_speed) return "ACCELERATE";
+
+    if (speed > max_speed + 0.30) return "DECELERATE";
 
     return "ACCELERATE";
 }
@@ -419,6 +427,21 @@ static void mark_visit(int cx, int cy)
         last_visit_x = cx;
         last_visit_y = cy;
     }
+}
+
+static double adaptive_speed(int exploration, double front)
+{
+    if (exploration) {
+        if (front > 3.0) return 1.60;
+        if (front > 2.0) return 1.20;
+        if (front > 1.2) return 0.85;
+        return 0.45;
+    }
+
+    if (front > 3.0) return 2.20;
+    if (front > 2.0) return 1.60;
+    if (front > 1.2) return 1.10;
+    return 0.55;
 }
 
 static const char* choose_command(
@@ -449,22 +472,9 @@ static const char* choose_command(
     last_x = cx;
     last_y = cy;
 
-double max_speed;
-
-if (exploration) {
-    if (front > 3.0) max_speed = 1.60;
-    else if (front > 2.0) max_speed = 1.20;
-    else if (front > 1.2) max_speed = 0.85;
-    else max_speed = 0.45;
-} else {
-    if (front > 3.0) max_speed = 2.20;
-    else if (front > 2.0) max_speed = 1.60;
-    else if (front > 1.2) max_speed = 1.10;
-    else max_speed = 0.55;
-}
-
-double danger_front = exploration ? 0.55 + speed * 1.40
-                                  : 0.50 + speed * 1.20;
+    double max_speed = adaptive_speed(exploration, front);
+    double danger_front = exploration ? 0.55 + speed * 1.40
+                                      : 0.50 + speed * 1.20;
 
     if (front < danger_front) {
         if (speed > 0.05) return "DECELERATE";
@@ -487,10 +497,6 @@ double danger_front = exploration ? 0.55 + speed * 1.40
         int next_x;
         int next_y;
 
-        /*
-         * Exploration globale :
-         * on cherche avec BFS la cellule non visitée la plus proche.
-         */
         if (bfs_nearest_unvisited(cx, cy, &next_x, &next_y)) {
             return drive_to_cell(
                 x,
@@ -506,42 +512,6 @@ double danger_front = exploration ? 0.55 + speed * 1.40
             );
         }
 
-        /*
-         * Si BFS ne trouve pas encore, conduite locale avec capteurs.
-         */
-        int dir = dir_from_orientation(orientation);
-        int dr = right_dir(dir);
-        int dl = left_dir(dir);
-
-        int rx = cx + dxs[dr];
-        int ry = cy + dys[dr];
-
-        int lx = cx + dxs[dl];
-        int ly = cy + dys[dl];
-
-        int vr = in_grid(rx, ry) ? visited[rx][ry] : 9999;
-        int vl = in_grid(lx, ly) ? visited[lx][ly] : 9999;
-
-        if (right > 1.00 && vr <= vl) {
-            if (speed > 0.08) return "DECELERATE";
-
-            turn_mode = 1;
-            turn_steps = 9;
-            last_turn = 1;
-            lock_turn = 7;
-            return "TURN_RIGHT";
-        }
-
-        if (left > 1.00) {
-            if (speed > 0.08) return "DECELERATE";
-
-            turn_mode = -1;
-            turn_steps = 9;
-            last_turn = -1;
-            lock_turn = 7;
-            return "TURN_LEFT";
-        }
-
         if (front > 0.90) {
             if (speed < max_speed) return "ACCELERATE";
             return "ACCELERATE";
@@ -552,9 +522,6 @@ double danger_front = exploration ? 0.55 + speed * 1.40
         return start_turn(right, left);
     }
 
-    /*
-     * Phase course : BFS vers l'arrivée.
-     */
     int next_x;
     int next_y;
 
