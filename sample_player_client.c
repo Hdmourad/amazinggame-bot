@@ -1,7 +1,11 @@
 /*
- * Bot Mourad Amazinggame
- * Compile Windows :
+ * Bot Mourad Amazinggame - version finale améliorée
+ *
+ * Compilation Windows :
  * gcc -Wall -o sample_player_client.exe sample_player_client.c -lws2_32 -lm
+ *
+ * Lancement :
+ * .\sample_player_client.exe 127.0.0.1 16210 MouradBot
  */
 
 #define _WIN32_WINNT 0x0601
@@ -58,6 +62,9 @@ static int last_x = -1;
 static int last_y = -1;
 static int stuck_counter = 0;
 
+static int last_visit_x = -1;
+static int last_visit_y = -1;
+
 static int send_line(sock_t fd, const char* msg)
 {
     char buf[256];
@@ -68,13 +75,16 @@ static int send_line(sock_t fd, const char* msg)
 static int read_line(sock_t fd, char* buf, size_t size)
 {
     size_t pos = 0;
+
     while (pos < size - 1) {
         char c;
         int n = (int)recv(fd, &c, 1, 0);
+
         if (n <= 0) return -1;
         if (c == '\n') break;
         if (c != '\r') buf[pos++] = c;
     }
+
     buf[pos] = '\0';
     return (int)pos;
 }
@@ -110,6 +120,7 @@ static int dir_from_orientation(double ori)
     if (ori < 45 || ori >= 315) return EAST;
     if (ori >= 45 && ori < 135) return NORTH;
     if (ori >= 135 && ori < 225) return WEST;
+
     return SOUTH;
 }
 
@@ -125,15 +136,18 @@ static int left_dir(int d)
 
 static double normalize_angle(double a)
 {
-    while (a < 0) a += 360;
-    while (a >= 360) a -= 360;
+    while (a < 0) a += 360.0;
+    while (a >= 360.0) a -= 360.0;
+
     return a;
 }
 
 static double angle_diff(double target, double current)
 {
     double diff = normalize_angle(target - current);
-    if (diff > 180) diff -= 360;
+
+    if (diff > 180.0) diff -= 360.0;
+
     return diff;
 }
 
@@ -141,6 +155,7 @@ static double angle_to_cell(double x, double y, int tx, int ty)
 {
     double cx = tx + 0.5;
     double cy = ty + 0.5;
+
     return normalize_angle(-atan2(cy - y, cx - x) * 180.0 / M_PI);
 }
 
@@ -251,84 +266,6 @@ static int bfs(int sx, int sy, int gx, int gy, int* next_x, int* next_y)
     return 0;
 }
 
-static const char* start_turn(double right, double left)
-{
-    if (lock_turn > 0) {
-        lock_turn--;
-
-        if (last_turn > 0) return "TURN_RIGHT";
-        return "TURN_LEFT";
-    }
-
-    if (right >= left) {
-        turn_mode = 1;
-        turn_steps = 10;
-        last_turn = 1;
-        lock_turn = 8;
-        return "TURN_RIGHT";
-    }
-
-    turn_mode = -1;
-    turn_steps = 10;
-    last_turn = -1;
-    lock_turn = 8;
-    return "TURN_LEFT";
-}
-
-static const char* continue_turn(double front)
-{
-    if (turn_steps <= 0) {
-        turn_mode = 0;
-        return NULL;
-    }
-
-    if (front > 1.40) {
-        turn_steps = 0;
-        turn_mode = 0;
-        lock_turn = 0;
-        return "ACCELERATE";
-    }
-
-    turn_steps--;
-
-    if (turn_mode > 0) return "TURN_RIGHT";
-    if (turn_mode < 0) return "TURN_LEFT";
-
-    return NULL;
-}
-
-static const char* drive_to_cell(
-    double x,
-    double y,
-    double orientation,
-    double speed,
-    double front,
-    double right,
-    double left,
-    int tx,
-    int ty,
-    double max_speed
-)
-{
-    double target = angle_to_cell(x, y, tx, ty);
-    double diff = angle_diff(target, orientation);
-
-    if (front < 1.00) {
-        if (speed > 0.04) return "DECELERATE";
-        return start_turn(right, left);
-    }
-
-    if (fabs(diff) > 14.0) {
-        if (speed > 0.05) return "DECELERATE";
-        return diff > 0 ? "TURN_LEFT" : "TURN_RIGHT";
-    }
-
-    if (speed < max_speed) return "ACCELERATE";
-
-    return "ACCELERATE";
-}
-
-
 static int bfs_nearest_unvisited(int sx, int sy, int* next_x, int* next_y)
 {
     int qx[GRID * GRID];
@@ -398,10 +335,90 @@ static int bfs_nearest_unvisited(int sx, int sy, int* next_x, int* next_y)
     return 0;
 }
 
-static int local_score(int cell_visited, double distance)
+static const char* start_turn(double right, double left)
 {
-    if (distance < 0.85) return 9999;
-    return cell_visited;
+    if (lock_turn > 0) {
+        lock_turn--;
+
+        if (last_turn > 0) return "TURN_RIGHT";
+        return "TURN_LEFT";
+    }
+
+    if (right >= left) {
+        turn_mode = 1;
+        turn_steps = 9;
+        last_turn = 1;
+        lock_turn = 7;
+        return "TURN_RIGHT";
+    }
+
+    turn_mode = -1;
+    turn_steps = 9;
+    last_turn = -1;
+    lock_turn = 7;
+    return "TURN_LEFT";
+}
+
+static const char* continue_turn(double front)
+{
+    if (turn_steps <= 0) {
+        turn_mode = 0;
+        return NULL;
+    }
+
+    if (front > 1.25) {
+        turn_steps = 0;
+        turn_mode = 0;
+        lock_turn = 0;
+        return "ACCELERATE";
+    }
+
+    turn_steps--;
+
+    if (turn_mode > 0) return "TURN_RIGHT";
+    if (turn_mode < 0) return "TURN_LEFT";
+
+    return NULL;
+}
+
+static const char* drive_to_cell(
+    double x,
+    double y,
+    double orientation,
+    double speed,
+    double front,
+    double right,
+    double left,
+    int tx,
+    int ty,
+    double max_speed
+)
+{
+    double target = angle_to_cell(x, y, tx, ty);
+    double diff = angle_diff(target, orientation);
+
+    if (front < 0.85) {
+        if (speed > 0.05) return "DECELERATE";
+        return start_turn(right, left);
+    }
+
+    if (fabs(diff) > 16.0) {
+        if (speed > 0.12) return "DECELERATE";
+        return diff > 0 ? "TURN_LEFT" : "TURN_RIGHT";
+    }
+
+    if (speed < max_speed) return "ACCELERATE";
+
+    return "ACCELERATE";
+}
+
+static void mark_visit(int cx, int cy)
+{
+    if (cx != last_visit_x || cy != last_visit_y) {
+        visited[cx][cy]++;
+        last_visit_x = cx;
+        last_visit_y = cy;
+    }
 }
 
 static const char* choose_command(
@@ -421,7 +438,7 @@ static const char* choose_command(
 
     if (!in_grid(cx, cy)) return "DECELERATE";
 
-    visited[cx][cy]++;
+    mark_visit(cx, cy);
 
     if (cx == last_x && cy == last_y) {
         stuck_counter++;
@@ -432,9 +449,22 @@ static const char* choose_command(
     last_x = cx;
     last_y = cy;
 
-    double max_speed = exploration ? 0.62 : 0.82;
-    double danger_front = exploration ? 0.48 + speed * 1.75
-                                      : 0.38 + speed * 1.35;
+double max_speed;
+
+if (exploration) {
+    if (front > 3.0) max_speed = 1.60;
+    else if (front > 2.0) max_speed = 1.20;
+    else if (front > 1.2) max_speed = 0.85;
+    else max_speed = 0.45;
+} else {
+    if (front > 3.0) max_speed = 2.20;
+    else if (front > 2.0) max_speed = 1.60;
+    else if (front > 1.2) max_speed = 1.10;
+    else max_speed = 0.55;
+}
+
+double danger_front = exploration ? 0.55 + speed * 1.40
+                                  : 0.50 + speed * 1.20;
 
     if (front < danger_front) {
         if (speed > 0.05) return "DECELERATE";
@@ -444,66 +474,23 @@ static const char* choose_command(
     const char* turn_cmd = continue_turn(front);
     if (turn_cmd != NULL) return turn_cmd;
 
-    if (stuck_counter > 24) {
+    if (stuck_counter > 26) {
         stuck_counter = 0;
+
         if (speed > 0.05) return "DECELERATE";
         return start_turn(right, left);
     }
 
-    if (speed > max_speed + 0.12) return "DECELERATE";
+    if (speed > max_speed + 0.30) return "DECELERATE";
 
     if (exploration == 1) {
-        int dir = dir_from_orientation(orientation);
-
-        int df = dir;
-        int dr = right_dir(dir);
-        int dl = left_dir(dir);
-
-        int fx = cx + dxs[df];
-        int fy = cy + dys[df];
-
-        int rx = cx + dxs[dr];
-        int ry = cy + dys[dr];
-
-        int lx = cx + dxs[dl];
-        int ly = cy + dys[dl];
-
-        int score_front = 9999;
-        int score_right = 9999;
-        int score_left = 9999;
-
-        if (in_grid(fx, fy)) score_front = local_score(visited[fx][fy], front);
-        if (in_grid(rx, ry)) score_right = local_score(visited[rx][ry], right);
-        if (in_grid(lx, ly)) score_left = local_score(visited[lx][ly], left);
-
-        if (score_front == 0) {
-            if (speed < max_speed) return "ACCELERATE";
-            return "ACCELERATE";
-        }
-
-        if (score_right == 0) {
-            if (speed > 0.08) return "DECELERATE";
-
-            turn_mode = 1;
-            turn_steps = 9;
-            last_turn = 1;
-            lock_turn = 8;
-            return "TURN_RIGHT";
-        }
-
-        if (score_left == 0) {
-            if (speed > 0.08) return "DECELERATE";
-
-            turn_mode = -1;
-            turn_steps = 9;
-            last_turn = -1;
-            lock_turn = 8;
-            return "TURN_LEFT";
-        }
-
         int next_x;
         int next_y;
 
+        /*
+         * Exploration globale :
+         * on cherche avec BFS la cellule non visitée la plus proche.
+         */
         if (bfs_nearest_unvisited(cx, cy, &next_x, &next_y)) {
             return drive_to_cell(
                 x,
@@ -519,36 +506,43 @@ static const char* choose_command(
             );
         }
 
-        if (
-            score_front <= score_right &&
-            score_front <= score_left &&
-            score_front < 9999
-        ) {
-            if (speed < max_speed) return "ACCELERATE";
-            return "ACCELERATE";
-        }
+        /*
+         * Si BFS ne trouve pas encore, conduite locale avec capteurs.
+         */
+        int dir = dir_from_orientation(orientation);
+        int dr = right_dir(dir);
+        int dl = left_dir(dir);
 
-        if (score_right <= score_left && score_right < 9999) {
+        int rx = cx + dxs[dr];
+        int ry = cy + dys[dr];
+
+        int lx = cx + dxs[dl];
+        int ly = cy + dys[dl];
+
+        int vr = in_grid(rx, ry) ? visited[rx][ry] : 9999;
+        int vl = in_grid(lx, ly) ? visited[lx][ly] : 9999;
+
+        if (right > 1.00 && vr <= vl) {
             if (speed > 0.08) return "DECELERATE";
 
             turn_mode = 1;
             turn_steps = 9;
             last_turn = 1;
-            lock_turn = 8;
+            lock_turn = 7;
             return "TURN_RIGHT";
         }
 
-        if (score_left < 9999) {
+        if (left > 1.00) {
             if (speed > 0.08) return "DECELERATE";
 
             turn_mode = -1;
             turn_steps = 9;
             last_turn = -1;
-            lock_turn = 8;
+            lock_turn = 7;
             return "TURN_LEFT";
         }
 
-        if (front > 0.80) {
+        if (front > 0.90) {
             if (speed < max_speed) return "ACCELERATE";
             return "ACCELERATE";
         }
@@ -558,28 +552,28 @@ static const char* choose_command(
         return start_turn(right, left);
     }
 
+    /*
+     * Phase course : BFS vers l'arrivée.
+     */
     int next_x;
     int next_y;
 
     if (bfs(cx, cy, GOAL_X, GOAL_Y, &next_x, &next_y)) {
-        double target = angle_to_cell(x, y, next_x, next_y);
-        double diff = angle_diff(target, orientation);
-
-        if (front < 0.75) {
-            if (speed > 0.10) return "DECELERATE";
-            return start_turn(right, left);
-        }
-
-        if (fabs(diff) > 15.0) {
-            if (speed > 0.12) return "DECELERATE";
-            return diff > 0 ? "TURN_LEFT" : "TURN_RIGHT";
-        }
-
-        if (speed < max_speed) return "ACCELERATE";
-        return "ACCELERATE";
+        return drive_to_cell(
+            x,
+            y,
+            orientation,
+            speed,
+            front,
+            right,
+            left,
+            next_x,
+            next_y,
+            max_speed
+        );
     }
 
-    if (front > 0.95) {
+    if (front > 0.90) {
         if (speed < max_speed) return "ACCELERATE";
         return "ACCELERATE";
     }
@@ -597,6 +591,7 @@ int main(int argc, char* argv[])
 
 #ifdef _WIN32
     WSADATA wsa;
+
     if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
         fprintf(stderr, "WSAStartup failed\n");
         return 1;
@@ -617,9 +612,11 @@ int main(int argc, char* argv[])
 
     if (getaddrinfo(host, port, &hints, &res) != 0) {
         fprintf(stderr, "getaddrinfo failed\n");
+
 #ifdef _WIN32
         WSACleanup();
 #endif
+
         return 1;
     }
 
@@ -640,9 +637,11 @@ int main(int argc, char* argv[])
 
     if (fd == INVALID_SOCK) {
         fprintf(stderr, "Could not connect\n");
+
 #ifdef _WIN32
         WSACleanup();
 #endif
+
         return 1;
     }
 
