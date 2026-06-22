@@ -443,6 +443,90 @@ static double adaptive_speed(int exploration, double front)
     if (front > 1.2) return 1.10;
     return 0.55;
 }
+static int has_unknown_edge(int x, int y)
+{
+    if (!in_grid(x, y)) return 0;
+
+    for (int d = 0; d < 4; d++) {
+        int nx = x + dxs[d];
+        int ny = y + dys[d];
+
+        if (in_grid(nx, ny) && !known[x][y][d]) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+static int bfs_nearest_frontier(int sx, int sy, int* next_x, int* next_y)
+{
+    int qx[GRID * GRID];
+    int qy[GRID * GRID];
+    int px[GRID][GRID];
+    int py[GRID][GRID];
+    int seen[GRID][GRID];
+
+    memset(seen, 0, sizeof(seen));
+
+    for (int x = 0; x < GRID; x++) {
+        for (int y = 0; y < GRID; y++) {
+            px[x][y] = -1;
+            py[x][y] = -1;
+        }
+    }
+
+    int head = 0;
+    int tail = 0;
+
+    qx[tail] = sx;
+    qy[tail] = sy;
+    tail++;
+    seen[sx][sy] = 1;
+
+    while (head < tail) {
+        int x = qx[head];
+        int y = qy[head];
+        head++;
+
+        if (!(x == sx && y == sy) && has_unknown_edge(x, y)) {
+            int cx = x;
+            int cy = y;
+
+            while (!(px[cx][cy] == sx && py[cx][cy] == sy)) {
+                int tx = px[cx][cy];
+                int ty = py[cx][cy];
+
+                if (tx < 0 || ty < 0) break;
+
+                cx = tx;
+                cy = ty;
+            }
+
+            *next_x = cx;
+            *next_y = cy;
+            return 1;
+        }
+
+        for (int d = 0; d < 4; d++) {
+            if (!can_move_known(x, y, d)) continue;
+
+            int nx = x + dxs[d];
+            int ny = y + dys[d];
+
+            if (!seen[nx][ny]) {
+                seen[nx][ny] = 1;
+                px[nx][ny] = x;
+                py[nx][ny] = y;
+                qx[tail] = nx;
+                qy[tail] = ny;
+                tail++;
+            }
+        }
+    }
+
+    return 0;
+}
 
 static const char* choose_command(
     int exploration,
@@ -494,34 +578,58 @@ static const char* choose_command(
     if (speed > max_speed + 0.30) return "DECELERATE";
 
     if (exploration == 1) {
-        int next_x;
-        int next_y;
+    int next_x;
+    int next_y;
 
-        if (bfs_nearest_unvisited(cx, cy, &next_x, &next_y)) {
-            return drive_to_cell(
-                x,
-                y,
-                orientation,
-                speed,
-                front,
-                right,
-                left,
-                next_x,
-                next_y,
-                max_speed
-            );
-        }
-
-        if (front > 0.90) {
-            if (speed < max_speed) return "ACCELERATE";
-            return "ACCELERATE";
-        }
-
-        if (speed > 0.05) return "DECELERATE";
-
-        return start_turn(right, left);
+    /*
+     * Priorité 1 : aller vers une frontière,
+     * c’est-à-dire une case qui a encore des directions inconnues.
+     */
+    if (bfs_nearest_frontier(cx, cy, &next_x, &next_y)) {
+        return drive_to_cell(
+            x,
+            y,
+            orientation,
+            speed,
+            front,
+            right,
+            left,
+            next_x,
+            next_y,
+            max_speed
+        );
     }
 
+    /*
+     * Priorité 2 : aller vers une cellule jamais visitée.
+     */
+    if (bfs_nearest_unvisited(cx, cy, &next_x, &next_y)) {
+        return drive_to_cell(
+            x,
+            y,
+            orientation,
+            speed,
+            front,
+            right,
+            left,
+            next_x,
+            next_y,
+            max_speed
+        );
+    }
+
+    /*
+     * Priorité 3 : comportement local rapide.
+     */
+    if (front > 1.00) {
+        if (speed < max_speed) return "ACCELERATE";
+        return "ACCELERATE";
+    }
+
+    if (speed > 0.05) return "DECELERATE";
+
+    return start_turn(right, left);
+}
     int next_x;
     int next_y;
 
