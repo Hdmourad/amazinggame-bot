@@ -1,5 +1,5 @@
 """Socket-based line and JSON I/O helpers for network communication."""
-from __future__ import annotations
+
 from __future__ import annotations
 
 import json

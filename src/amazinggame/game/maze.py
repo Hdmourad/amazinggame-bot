@@ -1,5 +1,7 @@
 """Maze data structure for maze generator."""
+
 from __future__ import annotations
+
 from collections import UserList, deque
 from typing import NamedTuple, TypedDict
 
@@ -105,7 +107,7 @@ class Maze:
         }
 
     @classmethod
-    def deserialize(cls, data: MazeState) -> "Maze":
+    def deserialize(cls, data: MazeState) -> Maze:
         """Build a maze instance from serialized wall states.
 
         Returns:

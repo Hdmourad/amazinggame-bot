@@ -1,5 +1,7 @@
 """TCP client for Amazinggame server communication."""
+
 from __future__ import annotations
+
 import argparse
 from socket import AF_INET, SOCK_STREAM, socket
 
