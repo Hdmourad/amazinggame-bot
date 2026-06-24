@@ -107,7 +107,7 @@ class GameServer(Server):
         logger.debug("sending to %s", client.name)
         try:
             client.network.write(text)
-        except (NetworkError, TimeoutError):
+        except NetworkError, TimeoutError:
             logger.exception("Problem sending state to client")
             self.remove_client(client)
 

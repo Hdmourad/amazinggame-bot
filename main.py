@@ -8,16 +8,20 @@ HOST = "127.0.0.1"
 PORT = 16210
 NAME = "AM_MH"
 
+
 if len(sys.argv) >= 4:
     HOST = sys.argv[1]
     PORT = int(sys.argv[2])
     NAME = sys.argv[3]
 
+
 GRID = 15
 GOAL = (14, 14)
 
+
 MAX_SPEED_EXPLORE = 1.10
 MAX_SPEED_RACE = 1.35
+
 
 ANGLE_OK = 8
 STOP_SPEED = 0.10
@@ -27,12 +31,10 @@ class SmartBot:
     def __init__(self):
         self.last_explore = 1
         self.race_mode = False
-
         self.visited = set()
         self.visit_count = defaultdict(int)
         self.walls = set()
         self.open_paths = set()
-
         self.last_cell = None
         self.stuck = 0
         self.last_turn = "RIGHT"
@@ -106,16 +108,9 @@ class SmartBot:
 
     def neighbors(self, c, known_only=False):
         x, y = c
-        possible = [
-            (x + 1, y),
-            (x, y + 1),
-            (x - 1, y),
-            (x, y - 1),
-        ]
-
         result = []
 
-        for n in possible:
+        for n in [(x + 1, y), (x, y + 1), (x - 1, y), (x, y - 1)]:
             if not self.in_grid(n):
                 continue
 
@@ -151,12 +146,11 @@ class SmartBot:
     def count_frontier(self, c):
         score = 0
 
-        for n in self.neighbors(c, known_only=False):
+        for n in self.neighbors(c):
             if n not in self.visited:
                 score += 1
 
             e = self.edge(c, n)
-
             if e not in self.walls and e not in self.open_paths:
                 score += 1
 
@@ -165,7 +159,6 @@ class SmartBot:
     def exploration_path(self, start):
         q = deque([(start, [])])
         seen = {start}
-
         best_path = []
         best_score = -999999
 
@@ -188,7 +181,7 @@ class SmartBot:
                     best_score = score
                     best_path = path
 
-            for n in self.neighbors(c, known_only=False):
+            for n in self.neighbors(c):
                 if n not in seen:
                     seen.add(n)
                     q.append((n, path + [n]))
@@ -217,7 +210,6 @@ class SmartBot:
         current = self.cell(s["x"], s["y"])
         speed = s["speed"]
         front = s["front"]
-
         max_speed = MAX_SPEED_RACE if self.race_mode else MAX_SPEED_EXPLORE
 
         wanted = self.target_angle(current, target)
